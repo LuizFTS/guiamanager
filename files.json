@@ -1,0 +1,55 @@
+{
+    "certificado": {
+        "cert":"cert.pem", 
+        "key":"chave.pem"
+    },
+    "controllers": "guia_controller.py",
+    "data": {
+        "lojas":"lojas.json", 
+        "path":"path.json", 
+        "sites":"sites.json"
+    },
+    "db": "db.py",
+    "gui": {
+        "configGUI":{
+            "LojaConfig":"LojaConfigDialog.py", 
+            "menuConfig":"menuConfig.py", 
+            "DefinePathGUI": "PathDynamicConfigDialog.py", 
+            "SiteCondigDialog": "SiteCondigDialog.py"
+        },
+        "app": "app.py",
+        "FormGuiaGUI": "FormGuiaGUI.py",
+        "tree_panel": "tree_panel.py"
+    },
+    "helpers": {
+        "UniqueFileName": "UniqueFileName.py"
+    },
+    "img": {
+        "settingIcon": "settings.png"
+    },
+    "models": {
+        "guia": "Guia.py", 
+        "loja": "Loja.py", 
+        "Site": "Site.py"
+    },
+    "services": {
+        "duaWebService": "dua_service.py",
+        "excelImportService": "excel_service.py",
+        "guia_service": "guia_service.py",
+        "request_service_mt": "request_service_mt.py",
+        "selenium_service_ba": "selenium_service_ba.py",
+        "selenium_service_ma": "selenium_service_ma.py",
+        "selenium_service_mg": "selenium_service_mg.py",
+        "selenium_service_pa": "selenium_service_pa.py",
+        "selenium_service_rj": "selenium_service_rj.py",
+        "selenium_service_to": "selenium_service_to.py"
+    },
+    "utils": {
+        "BrowserManager": "BrowserManager.py",
+        "ErrorHandling": "ErrorHandling.py",
+        "ObservationOfPaymentSlip": "ObservationOfPaymentSlip.py",
+        "OverlayDetectedException": "OverlayDetectedException.py",
+        "selenium_funcions": "selenium_funcions.py"
+    },
+    "main": "main.py"
+}
