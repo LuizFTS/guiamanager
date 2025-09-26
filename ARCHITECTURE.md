@@ -61,7 +61,7 @@ GuiaManager/
 ├─ main.py
 └─ README.md
 ---
-
+```
 ## 3. Passo a Passo de Desenvolvimento
 
 ### 3.1 Criar Database
