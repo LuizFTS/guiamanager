@@ -17,52 +17,51 @@ Este documento descreve a **organização do projeto**, seguindo **Clean Archite
 
 ## 2. Estrutura de Pastas Sugerida
 
+```text
 GuiaManager/
 │
 ├─ domain/
-│ ├─ entities/
-│ │ └─ guia.py
-│ │ └─ loja.py
-│ │ └─ site.py
-│ └─ repositories/
-│ └─ i_guia_repository.py
-│ └─ i_loja_repository.py
-│ └─ i_site_repository.py
+│  ├─ entities/
+│  │  ├─ guia.py
+│  │  ├─ loja.py
+│  │  └─ site.py
+│  └─ repositories/
+│     ├─ i_guia_repository.py
+│     ├─ i_loja_repository.py
+│     └─ i_site_repository.py
 │
 ├─ infrastructure/
-│ ├─ db/
-│ │ └─ database.py
-│ │ └─ guia_repository_sqlite.py
-│ │ └─ loja_repository_sqlite.py
-│ │ └─ site_repository_sqlite.py
-│ ├─ selenium/
-│ ├─ excel/
-│ ├─ email/
-│ └─ utils/
+│  ├─ db/
+│  │  ├─ database.py
+│  │  ├─ guia_repository_sqlite.py
+│  │  ├─ loja_repository_sqlite.py
+│  │  └─ site_repository_sqlite.py
+│  ├─ selenium/
+│  ├─ excel/
+│  ├─ email/
+│  └─ utils/
 │
 ├─ application/
-│ ├─ usecases/
-│ │ └─ importar_guias_excel.py
-│ │ └─ emitir_guia.py
-│ │ └─ atualizar_guia.py
-│ │ └─ excluir_guia.py
-│ │ └─ listar_guias.py
+│  ├─ usecases/
+│  │  ├─ importar_guias_excel.py
+│  │  ├─ emitir_guia.py
+│  │  ├─ atualizar_guia.py
+│  │  ├─ excluir_guia.py
+│  │  └─ listar_guias.py
 │
 ├─ gui/
-│ ├─ forms/
-│ │ └─ form_guia_gui.py
-│ │ └─ config_dialogs/
-│ ├─ tree_panel.py
-│ └─ app.py
+│  ├─ forms/
+│  │  ├─ form_guia_gui.py
+│  │  └─ config_dialogs/
+│  ├─ tree_panel.py
+│  └─ app.py
 │
-├─ data/ # arquivos .json, certificado etc
+├─ data/          # arquivos .json, certificado etc
 ├─ img/
 ├─ main.py
 └─ README.md
-
-
 ---
-
+```
 ## 3. Passo a Passo de Desenvolvimento
 
 ### 3.1 Criar Database
