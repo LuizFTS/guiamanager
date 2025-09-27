@@ -4,7 +4,7 @@ from typing import List, Optional
 
 class ILojaRepository(ABC):
     @abstractmethod
-    def save(self, loja: Loja) -> bool:
+    def save(self, loja: Loja, site_id: int) -> bool:
         # Salvar uma loja no repositório.
         pass
 

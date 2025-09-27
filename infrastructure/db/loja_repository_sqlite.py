@@ -1,5 +1,5 @@
 from domain.entities.loja import Loja
-from domain.repositories.loja_repository import ILojaRepository
+from domain.repositories.i_loja_repository import ILojaRepository
 from infrastructure.db.database import Database
 from typing import List, Optional
 

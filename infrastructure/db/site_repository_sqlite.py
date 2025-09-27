@@ -1,5 +1,5 @@
 from domain.entities.site import Site
-from domain.repositories.site_repository import ISiteRepository
+from domain.repositories.i_site_repository import ISiteRepository
 from infrastructure.db.database import Database
 from typing import List, Optional
 

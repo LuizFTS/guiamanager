@@ -1,5 +1,5 @@
 from domain.entities.guia import Guia
-from domain.repositories.guia_repository import IGuiaRepository
+from domain.repositories.i_guia_repository import IGuiaRepository
 from infrastructure.db.database import Database
 from typing import List, Optional
 
