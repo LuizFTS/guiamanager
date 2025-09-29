@@ -2,7 +2,7 @@ from domain.repositories.i_site_repository import ISiteRepository
 from domain.exceptions.domain_error import DomainError
 from domain.entities.site import Site
 
-class AtualizarLojaUseCase:
+class AtualizarSiteUseCase:
     
     def __init__(self, site_repo: ISiteRepository):
         self.site_repo = site_repo

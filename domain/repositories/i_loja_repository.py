@@ -14,7 +14,7 @@ class ILojaRepository(ABC):
         pass
 
     @abstractmethod
-    def update(self, filial: str) -> bool:
+    def update(self, filial: str, site_id: int) -> bool:
         # Retorna uma loja pelo ID ou None.
         pass
 

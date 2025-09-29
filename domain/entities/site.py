@@ -5,7 +5,6 @@ from typing import Optional
 
 @dataclass
 class Site:
-    id: Optional[int] = field(default=None)
     uf: str
     icms: str
     difal: str
@@ -13,7 +12,8 @@ class Site:
     icau: str
     fot: str
     ican: str
-    created_at: datetime = field(default_factory=datetime.now(UTC))
+    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    id: Optional[int] = field(default=None)
     
     def __post_init__(self):
         self._normalize()

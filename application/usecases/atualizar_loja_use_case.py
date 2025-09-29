@@ -14,8 +14,13 @@ class AtualizarLojaUseCase:
         Atualizar loja na tabela Lojas e se der erro
         será disparado DomainError
         """
+
+        # ✅ Verifica se existe site para a UF informada
+        site = self.site_repo.get_by_uf(loja.uf)
+        if not site:
+            raise DomainError("Verifique se o site para essa UF já foi cadastrado.")
     
-        # ✅ Se a entidade foi criada com sucesso, já passou nas validações
-        updated = self.loja_repo.update(loja)      
+        # ✅ Se a entidade foi atualizada com sucesso, já passou nas validações
+        updated = self.loja_repo.update(loja, site.id)      
         if not updated:
             raise DomainError("Erro ao atualizar as informações da loja.")

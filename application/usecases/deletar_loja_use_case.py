@@ -9,13 +9,13 @@ class DeletarLojaUseCase:
         self.loja_repo = loja_repo
         self.site_repo = site_repo
         
-    def execute(self, loja: Loja) -> None:
+    def execute(self, filial: str) -> None:
         """ 
         Deletar loja na tabela Lojas e se der erro
         será disparado DomainError
         """
     
         # ✅ Se a entidade foi criada com sucesso, já passou nas validações
-        saved = self.loja_repo.delete(loja.id)        
+        saved = self.loja_repo.delete(filial)        
         if not saved:
             raise DomainError("Erro ao deletar a loja.")

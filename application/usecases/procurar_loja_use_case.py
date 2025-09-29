@@ -9,15 +9,15 @@ class ProcurarLojaUseCase:
         self.loja_repo = loja_repo
         self.site_repo = site_repo
         
-    def execute(self, id: int) -> Loja:
+    def execute(self, filial: str) -> Loja|None:
         """ 
         Procurar loja por id que está na tabela Lojas.
         Caso der errado, disparar DomainError
         """
 
         # ✅ Se a entidade foi criada com sucesso, já passou nas validações
-        saved = self.loja_repo.get_by_id(id)      
+        saved = self.loja_repo.get_by_filial(filial)      
         if not saved:
-            raise DomainError("Loja não encontrada.")
+            return None
         
         return saved

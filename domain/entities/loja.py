@@ -8,20 +8,20 @@ from datetime import datetime, UTC
 
 @dataclass
 class Loja:
-    id: Optional[int] = field(default=None)
     filial: str
     uf: str
     cnpj: str
     ie: str
     site: Site
-    created_at: datetime = field(default_factory=datetime.now(UTC))
+    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    id: Optional[int] = field(default=None)
     
     def __post_init__(self):
         self._normalize()
         self._validate()
         
     def _normalize(self) -> None:
-        self.filial = self.filial.strip()
+        self.filial = self.filial.strip().zfill(2)
         self.cnpj = self.cnpj.strip()
         self.ie = self.ie.strip()
         self.uf = self.uf.strip().upper()

@@ -33,14 +33,14 @@ class SiteRepositorySQLite(ISiteRepository):
             print(f"Erro ao salvar guia completo: {e}")
             return False
         
-    def delete(self, id: int) -> bool:
+    def delete(self, uf: str) -> bool:
         """Deleta guia e seus detalhes."""
         try:
             with self.db.connect() as conn:
-                conn.execute("DELETE FROM Sites WHERE Id = ?", (id,))
+                conn.execute("DELETE FROM Sites WHERE Uf = ?", (uf,))
             return True
         except Exception as e:
-            print(f"Erro ao deletar guia: {e}")
+            print(f"Erro ao deletar site: {e}")
             return False
         
     def update(self, site: Site) -> bool:
@@ -51,7 +51,7 @@ class SiteRepositorySQLite(ISiteRepository):
                     """
                     UPDATE Sites
                     SET Icms = ?, Difal = ?, St = ?, Icau = ?, Fot = ?, Ican = ?
-                    WHERE Id = ?
+                    WHERE Uf = ?
                     """,
                     (
                         site.icms,
@@ -60,33 +60,56 @@ class SiteRepositorySQLite(ISiteRepository):
                         site.icau,
                         site.fot,
                         site.ican,
-                        site.id
+                        site.uf
                     )
                 )
             return cursor.rowcount > 0
         except Exception as e:
-            print(f"Erro ao atualizar guia: {e}")
+            print(f"Erro ao atualizar site: {e}")
             return False
         
     def get_by_id(self, id: int) -> Optional[Site]:
         """Retorna um Guia completo pelo ID."""
         try:
             with self.db.connect() as conn:
-                row = conn.execute("SELECT * FROM Guias WHERE Id = ?", (id,)).fetchone()
+                row = conn.execute("SELECT * FROM Sites WHERE Id = ?", (id,)).fetchone()
                 if not row:
                     return None
 
                 return Site(
-                    id=row["Id"],
-                    icms=row["Icms"],
-                    difal=row["Difal"],
-                    st=row["St"],
-                    icau=row["Icau"],
-                    fot=row["Fot"],
-                    ican=row["Ican"]
+                    id=row[0],
+                    uf=row[1],
+                    icms=row[2],
+                    difal=row[3],
+                    st=row[4],
+                    icau=row[5],
+                    fot=row[6],
+                    ican=row[7]
+                    )
+        except Exception as e:
+            print(f"Erro ao buscar site: {e}")
+            return None
+    
+    def get_by_uf(self, uf: str) -> Optional[Site]:
+        """Retorna um Guia completo pelo ID."""
+        try:
+            with self.db.connect() as conn:
+                row = conn.execute("SELECT * FROM Sites WHERE Uf = ?", (uf,)).fetchone()
+                if not row:
+                    return None
+
+                return Site(
+                    id=row[0],
+                    uf=row[1],
+                    icms=row[2],
+                    difal=row[3],
+                    st=row[4],
+                    icau=row[5],
+                    fot=row[6],
+                    ican=row[7]
                 )
         except Exception as e:
-            print(f"Erro ao buscar guia: {e}")
+            print(f"Erro ao buscar site: {e}")
             return None
 
     def list_all(self) -> List[Site]:
@@ -98,16 +121,17 @@ class SiteRepositorySQLite(ISiteRepository):
                 for row in rows:
                     sites.append(
                         Site(
-                            id=row["Id"],
-                            icms=row["Icms"],
-                            difal=row["Difal"],
-                            st=row["St"],
-                            icau=row["Icau"],
-                            fot=row["Fot"],
-                            ican=row["Ican"]
+                            id=row[0],
+                            uf=row[1],
+                            icms=row[2],
+                            difal=row[3],
+                            st=row[4],
+                            icau=row[5],
+                            fot=row[6],
+                            ican=row[7]
                         )
                     )
             return sites
         except Exception as e:
-            print(f"Erro ao listar guias: {e}")
+            print(f"Erro ao listar sites: {e}")
             return []

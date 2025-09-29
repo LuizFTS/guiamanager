@@ -2,6 +2,7 @@ CREATE_TABLES_SCRIPT = """
 
 CREATE TABLE IF NOT EXISTS Sites (
     "Id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "Uf" TEXT,
     "Icms" TEXT,
     "Difal" TEXT,
     "St" TEXT,

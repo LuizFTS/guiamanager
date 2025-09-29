@@ -12,6 +12,9 @@ class AdicionarSiteUseCase:
         Adicionar site na tabela Sites e se
         der erro, dispara DomainError
         """
+        is_not_unique = self.site_repo.get_by_uf(site.uf)
+        if(is_not_unique):
+            raise DomainError("UF já cadastrada.")
         
         # ✅ Se a entidade foi criada com sucesso, já passou nas validações
         saved = self.site_repo.save(site)        

@@ -15,7 +15,7 @@ class LojaRepositorySQLite(ILojaRepository):
                     """
                     INSERT INTO Lojas 
                         (Filial, Uf, Cnpj, Ie, Site_Id)
-                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                    VALUES (?, ?, ?, ?, ?)
                     """,
                     (
                         loja.filial,
@@ -28,14 +28,14 @@ class LojaRepositorySQLite(ILojaRepository):
 
             return True
         except Exception as e:
-            print(f"Erro ao salvar guia completo: {e}")
+            print(f"Erro ao salvar Loja completo: {e}")
             return False
         
-    def delete(self, id: int) -> bool:
-        """Deleta guia e seus detalhes."""
+    def delete(self, filial: str) -> bool:
+        """Deleta Loja e seus detalhes."""
         try:
             with self.db.connect() as conn:
-                conn.execute("DELETE FROM Lojas WHERE Id = ?", (id,))
+                conn.execute("DELETE FROM Lojas WHERE Filial = ?", (filial,))
             return True
         except Exception as e:
             print(f"Erro ao deletar guia: {e}")
@@ -49,43 +49,63 @@ class LojaRepositorySQLite(ILojaRepository):
                     """
                     UPDATE Lojas
                     SET Uf = ?, Cnpj = ?, Ie = ?, Site_Id = ?
-                    WHERE Id = ?
+                    WHERE Filial = ?
                     """,
                     (
                         loja.uf,
                         loja.cnpj,
                         loja.ie,
                         site_id,
-                        loja.id
+                        loja.filial
                     )
                 )
             return cursor.rowcount > 0
         except Exception as e:
-            print(f"Erro ao atualizar guia: {e}")
+            print(f"Erro ao atualizar Loja: {e}")
             return False
         
     def get_by_id(self, id: int) -> Optional[Loja]:
-        """Retorna um Guia completo pelo ID."""
+        """Retorna um Lojas completo pelo ID."""
         try:
             with self.db.connect() as conn:
-                row = conn.execute("SELECT * FROM Guias WHERE Id = ?", (id,)).fetchone()
+                row = conn.execute("SELECT * FROM Lojas WHERE Id = ?", (id,)).fetchone()
                 if not row:
                     return None
 
                 return Loja(
-                    id=row["Id"],
-                    uf=row["Uf"],  # preencher com dados de Loja se necessário
-                    cnpj=row["Cnpj"],
-                    ie=row["Ie"],
-                    uf=row["Uf"],
+                    id=row[0],
+                    filial=row[1],
+                    uf=row[2],  # preencher com dados de Loja se necessário
+                    cnpj=row[3],
+                    ie=row[4],
                     site=""
                 )
         except Exception as e:
-            print(f"Erro ao buscar guia: {e}")
+            print(f"Erro ao buscar loja: {e}")
+            return None
+        
+    def get_by_filial(self, filial: str) -> Optional[Loja]:
+        """Retorna um loja completo pelo ID."""
+        try:
+            with self.db.connect() as conn:
+                row = conn.execute("SELECT * FROM Lojas WHERE Filial = ?", (filial,)).fetchone()
+                if not row:
+                    return None
+
+                return Loja(
+                    id=row[0],
+                    filial=row[1],
+                    uf=row[2],  # preencher com dados de Loja se necessário
+                    cnpj=row[3],
+                    ie=row[4],
+                    site=""
+                )
+        except Exception as e:
+            print(f"Erro ao buscar loja: {e}")
             return None
 
     def list_all(self) -> List[Loja]:
-        """Lista todos os Guias."""
+        """Lista todos os Lojas."""
         try:
             with self.db.connect() as conn:
                 rows = conn.execute("SELECT * FROM Lojas").fetchall()
@@ -93,15 +113,15 @@ class LojaRepositorySQLite(ILojaRepository):
                 for row in rows:
                     lojas.append(
                         Loja(
-                            id=row["Id"],
-                            uf=row["Uf"],  # preencher com dados de Loja se necessário
-                            cnpj=row["Cnpj"],
-                            ie=row["Ie"],
-                            uf=row["Uf"],
+                            id=row[0],
+                            filial=row[1],
+                            uf=row[2],  # preencher com dados de Loja se necessário
+                            cnpj=row[3],
+                            ie=row[4],
                             site=""
                         )
                     )
             return lojas
         except Exception as e:
-            print(f"Erro ao listar guias: {e}")
+            print(f"Erro ao listar lojas: {e}")
             return []

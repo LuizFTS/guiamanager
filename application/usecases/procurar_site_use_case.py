@@ -7,14 +7,14 @@ class ProcurarSiteUseCase:
     def __init__(self, site_repo: ISiteRepository):
         self.site_repo = site_repo
         
-    def execute(self, id: int) -> Site:
+    def execute(self, uf: str) -> Site:
         """ 
         Procurar site por id que está na tabela Sites.
         Caso der errado, disparar DomainError
         """
 
         # ✅ Se a entidade foi criada com sucesso, já passou nas validações
-        saved = self.site_repo.get_by_id(id)      
+        saved = self.site_repo.get_by_uf(uf)      
         if not saved:
             raise DomainError("Site não encontrado.")
         

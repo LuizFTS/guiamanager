@@ -9,7 +9,7 @@ class ISiteRepository(ABC):
         pass
 
     @abstractmethod
-    def delete(self, id: int) -> bool:
+    def delete(self, filial: str) -> bool:
         # Retorna uma site pelo ID ou None.
         pass
 
