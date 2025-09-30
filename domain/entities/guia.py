@@ -7,6 +7,8 @@ import os
 @dataclass
 class Guia:
     filial: str
+    loja_id: int
+    site_id: int
     cnpj: str
     ie: str
     uf: str

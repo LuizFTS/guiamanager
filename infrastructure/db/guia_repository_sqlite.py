@@ -2,6 +2,7 @@ from domain.entities.guia import Guia
 from domain.repositories.i_guia_repository import IGuiaRepository
 from infrastructure.db.database import Database
 from typing import List, Optional
+from datetime import datetime
 
 class GuiaRepositorySQLite(IGuiaRepository):
     def __init__(self, db: Database):
@@ -99,16 +100,18 @@ class GuiaRepositorySQLite(IGuiaRepository):
                 fretes = [r["Numero"] for r in conn.execute("SELECT Numero FROM FretesGuia WHERE Guia_Id = ?", (guia_id,))]
 
                 return Guia(
-                    id=row["Id"],
+                    id=row[0],
                     filial="",  # preencher com dados de Loja se necessário
+                    loja_id=[1],
+                    site_id=[2],
                     cnpj="",
                     ie="",
                     uf="",
-                    periodo=row["Periodo"],
-                    vencimento=row["Vencimento"],
-                    tipo=row["Tipo"],
-                    valor=row["Valor"],
-                    fcp=row["Fcp"],
+                    periodo=datetime.fromisoformat(row[3]),
+                    vencimento=datetime.fromisoformat(row[4]),
+                    tipo=row[5],
+                    valor=row[6],
+                    fcp=row[7],
                     site="",  # preencher com dados de Site se necessário
                     notas=notas,
                     fretes=fretes
@@ -117,28 +120,31 @@ class GuiaRepositorySQLite(IGuiaRepository):
             print(f"Erro ao buscar guia: {e}")
             return None
         
-    def get_by_uf(self, guia: Guia) -> Optional[Guia]:
+    def get_by_loja_id_and_tipo(self, loja_id: int, tipo: str ) -> Optional[Guia]:
         """Retorna um Guia completo pelo ID."""
         try:
             with self.db.connect() as conn:
-                row = conn.execute("SELECT * FROM Guias WHERE Uf = ?", (guia.uf,)).fetchone()
+                row = conn.execute("SELECT * FROM Guias WHERE Loja_Id = ? AND Tipo = ?", (loja_id, tipo)).fetchone()
                 if not row:
                     return None
 
-                notas = [r["Numero"] for r in conn.execute("SELECT Numero FROM NotasGuia WHERE Guia_Id = ?", (guia.id,))]
-                fretes = [r["Numero"] for r in conn.execute("SELECT Numero FROM FretesGuia WHERE Guia_Id = ?", (guia.id,))]
+                print(row)
+                notas = [r["Numero"] for r in conn.execute("SELECT Numero FROM NotasGuia WHERE Guia_Id = ?", (row[0],))]
+                fretes = [r["Numero"] for r in conn.execute("SELECT Numero FROM FretesGuia WHERE Guia_Id = ?", (row[0],))]
 
                 return Guia(
-                    id=row["Id"],
+                    id=row[0],
+                    loja_id=[1],
+                    site_id=[2],
                     filial="",  # preencher com dados de Loja se necessário
                     cnpj="",
                     ie="",
                     uf="",
-                    periodo=row["Periodo"],
-                    vencimento=row["Vencimento"],
-                    tipo=row["Tipo"],
-                    valor=row["Valor"],
-                    fcp=row["Fcp"],
+                    periodo=row[3],
+                    vencimento=row[4],
+                    tipo=row[5],
+                    valor=row[6],
+                    fcp=row[7],
                     site="",  # preencher com dados de Site se necessário
                     notas=notas,
                     fretes=fretes
@@ -154,20 +160,22 @@ class GuiaRepositorySQLite(IGuiaRepository):
                 rows = conn.execute("SELECT * FROM Guias").fetchall()
                 guias = []
                 for row in rows:
-                    notas = [r["Numero"] for r in conn.execute("SELECT Numero FROM NotasGuia WHERE Guia_Id = ?", (row["Id"],))]
-                    fretes = [r["Numero"] for r in conn.execute("SELECT Numero FROM FretesGuia WHERE Guia_Id = ?", (row["Id"],))]
+                    notas = [r["Numero"] for r in conn.execute("SELECT Numero FROM NotasGuia WHERE Guia_Id = ?", (row[0],))]
+                    fretes = [r["Numero"] for r in conn.execute("SELECT Numero FROM FretesGuia WHERE Guia_Id = ?", (row[0],))]
                     guias.append(
                         Guia(
-                            id=row["Id"],
+                            id=row[0],
+                            loja_id=[1],
+                            site_id=[2],
                             filial="",
                             cnpj="",
                             ie="",
                             uf="",
-                            periodo=row["Periodo"],
-                            vencimento=row["Vencimento"],
-                            tipo=row["Tipo"],
-                            valor=row["Valor"],
-                            fcp=row["Fcp"],
+                            periodo=row[3],
+                            vencimento=row[4],
+                            tipo=row[5],
+                            valor=row[6],
+                            fcp=row[7],
                             site="",
                             notas=notas,
                             fretes=fretes

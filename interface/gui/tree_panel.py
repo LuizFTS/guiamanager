@@ -5,10 +5,13 @@ from tkinter import ttk, messagebox
 import locale
 import uuid
 from domain.entities.guia import Guia
+from interface.controllers.guia_controller import GuiaController
 
 class TreePanel(ttk.Frame):
-    def __init__(self, parent, alert_func=None):
+    def __init__(self, parent, guia_controller: GuiaController, alert_func=None):
         super().__init__(parent)
+        
+        self.guia_controller = guia_controller
 
         self.alert_func = alert_func or (lambda title, msg: messagebox.showwarning(title, msg))
         self.colunas = ("Filial", "UF", "Tipo", "Valor", "Status")
@@ -41,7 +44,21 @@ class TreePanel(ttk.Frame):
 
         self.tree_direita = self._criar_treeview()
         self.tree_direita.grid(row=1, column=2, padx=10)
+        
+        self._initialize()
+        
+    def _initialize(self):
+        guias = self.guia_controller.get_all()
+        
+        if guias:
+            for guia in guias:
+                self.adicionar_guia(guia)
+                
+    def reload(self):
+        for item in self.tree_esquerda.get_children():
+            self.tree_esquerda.delete(item)
 
+        self._initialize()
     # ------------------------
     # Criação da TreeView
     # ------------------------
@@ -100,6 +117,7 @@ class TreePanel(ttk.Frame):
             if self.tree_esquerda.exists(guia_id):
                 self.tree_esquerda.delete(guia_id)
             del self._objetos_esquerda[guia_id]
+            self.guia_controller.delete(guia_id)
             self._reordenar_tree(self.tree_esquerda, self._objetos_esquerda)
             return True
         return False

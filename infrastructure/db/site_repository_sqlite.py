@@ -112,6 +112,19 @@ class SiteRepositorySQLite(ISiteRepository):
             print(f"Erro ao buscar site: {e}")
             return None
 
+    def get_url_by_uf_and_type(self, uf: str, tipo: str) -> str:
+        """Retorna um Guia completo pelo ID."""
+        try:
+            with self.db.connect() as conn:
+                row = conn.execute(f"SELECT {tipo.lower().capitalize()} FROM Sites WHERE Uf = ?", (uf,)).fetchone()
+                if not row:
+                    return None
+
+                return row[0]
+        except Exception as e:
+            print(f"Erro ao buscar site: {e}")
+            return None
+
     def list_all(self) -> List[Site]:
         """Lista todos os Guias."""
         try:

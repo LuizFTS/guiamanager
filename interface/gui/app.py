@@ -33,7 +33,7 @@ class GuiaApp(tk.Tk):
         btn_excel.pack(pady=(0, 10))
 
         # Painel de visualização (TreePanel)
-        self.tree_panel = TreePanel(self)
+        self.tree_panel = TreePanel(self, guia_controller)
         self.tree_panel.pack(fill="both", expand=True, pady=10)
 
         # Botões CRUD (Adicionar / Editar / Excluir)
@@ -145,7 +145,7 @@ class GuiaApp(tk.Tk):
         self._centralizar_dialog(dialog)
 
     def _abrir_form_guia(self, edit: bool):
-        dialog = FormGuiaGUI(self, self.tree_panel, edit=edit)
+        dialog = FormGuiaGUI(self, self.tree_panel, self.site_controller, self.loja_controller, self.guia_controller, edit=edit)
         self._centralizar_dialog(dialog)
 
     def _centralizar_dialog(self, dialog):

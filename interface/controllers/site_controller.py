@@ -4,6 +4,7 @@ from application.usecases.atualizar_site_use_case import AtualizarSiteUseCase
 from application.usecases.deletar_site_use_case import DeletarSiteUseCase
 from application.usecases.listar_sites_use_case import ListarSitesUseCase
 from application.usecases.procurar_site_use_case import ProcurarSiteUseCase
+from application.usecases.procurar_url_site_use_case import ProcurarUrlSiteUseCase
 from typing import List
 
 
@@ -13,13 +14,15 @@ class SiteController:
                  atualizar_site_usecase: AtualizarSiteUseCase,
                  deletar_site_usecase: DeletarSiteUseCase,
                  listar_sites_usecase: ListarSitesUseCase,
-                 procurar_site_usecase: ProcurarSiteUseCase
+                 procurar_site_usecase: ProcurarSiteUseCase,
+                 procurar_url_site_usecase: ProcurarUrlSiteUseCase
                  ):
         self.adicionar_site_usecase = adicionar_site_usecase
         self.atualizar_site_usecase = atualizar_site_usecase
         self.deletar_site_usecase = deletar_site_usecase
         self.listar_sites_usecase = listar_sites_usecase
         self.procurar_site_usecase = procurar_site_usecase
+        self.procurar_url_site_usecase = procurar_url_site_usecase
 
     def get_all(self) -> List[Site]:
         sites = self.listar_sites_usecase.execute()
@@ -36,4 +39,7 @@ class SiteController:
 
     def find(self, uf: str) -> Site:
         return self.procurar_site_usecase.execute(uf)
+    
+    def find_url(self, uf: str, tipo: str) -> str:
+        return self.procurar_url_site_usecase.execute(uf, tipo)
     

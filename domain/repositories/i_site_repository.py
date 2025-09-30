@@ -27,6 +27,11 @@ class ISiteRepository(ABC):
     def get_by_uf(self, uf: str) -> Optional[Site]:
         # Retorna uma site pelo ID ou None.
         pass
+    
+    @abstractmethod
+    def get_url_by_uf_and_type(self, uf: str, tipo: str) -> str:
+        
+        pass
 
     @abstractmethod
     def list_all(self) -> List[Site]:

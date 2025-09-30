@@ -4,7 +4,7 @@ from typing import List, Optional
 
 class IGuiaRepository(ABC):
     @abstractmethod
-    def save(self, guia: Guia) -> bool:
+    def save(self, guia: Guia, loja_id: int, site_id: int) -> bool:
         # Salvar uma guia no repositório.
         pass
 
@@ -14,7 +14,7 @@ class IGuiaRepository(ABC):
         pass
 
     @abstractmethod
-    def update(self, uf: str) -> bool:
+    def update(self, guia: Guia, loja_id: int, site_id: int) -> bool:
         # Retorna uma guia pelo ID ou None.
         pass
 
@@ -24,7 +24,7 @@ class IGuiaRepository(ABC):
         pass
 
     @abstractmethod
-    def get_by_uf(self, uf: str) -> Optional[Guia]:
+    def get_by_loja_id_and_tipo(self, filial: str, tipo: str) -> Optional[Guia]:
         # Retorna uma guia pelo ID ou None.
         pass
 
