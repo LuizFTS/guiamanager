@@ -23,7 +23,7 @@ class ProcurarGuiaUseCase:
         saved = self.guia_repo.get_by_loja_id_and_tipo(loja.id, tipo)
         
         if saved:
-            loja = self.loja_repo.get_by_id(saved.loja_id[0])
+            loja = self.loja_repo.get_by_id(saved.loja_id)
             saved.filial = loja.filial
             saved.cnpj = loja.cnpj
             saved.ie = loja.ie

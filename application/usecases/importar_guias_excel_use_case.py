@@ -1,11 +1,12 @@
 from domain.repositories.i_guia_repository import IGuiaRepository
 from domain.repositories.i_loja_repository import ILojaRepository
 from domain.repositories.i_site_repository import ISiteRepository
+from domain.services.i_read_excel_service import IReadExcelService
 from domain.entities.guia import Guia
 
 class ImportarGuiasExcelUseCase():
     
-    def __init__(self, site_repo: ISiteRepository, loja_repo: ILojaRepository, guia_repo: IGuiaRepository, excel_service):
+    def __init__(self, site_repo: ISiteRepository, loja_repo: ILojaRepository, guia_repo: IGuiaRepository, excel_service: IReadExcelService):
         self.guia_repo = guia_repo
         self.loja_repo = loja_repo
         self.site_repo = site_repo
@@ -13,25 +14,25 @@ class ImportarGuiasExcelUseCase():
         
     def execute(self, file_path: str) -> int:
         """ 
-        Importa guias do Excel, salva no banco
-        e retorna a quantidade de guias importadas.
+        Importa guias do Excel, e gera um
+        Entity Guia para cada linha importada e retorna
+        a lista de todas as guias.
         """
         # 1. Lê a planilha
-        guias_data = self.excel_service.read_excel(file_path)
-        
-        
-        count = 0
-        for data in guias_data:
-            # 2. Cria a entity Guia
-            guia = Guia(**data)
+        guias: list[Guia] = self.excel_service.read(file_path)
 
-            # 3. Resolve IDs ()
+        for guia in guias:
             loja = self.loja_repo.get_by_filial(guia.filial)
-            site = self.site_repo.get_by_uf(guia.uf)
-            if not loja or not site:
-                raise Exception("Verificar se loja está cadastrada e se há o cadastro dos sites para UF da loja.")
-            
-            if self.guia_repo.save(guia, loja.id, site.id):
-                count += 1
-                
-        return count
+            site = self.site_repo.get_url_by_uf_and_type(loja.uf, guia.tipo)
+            site_id = self.site_repo.get_by_uf(loja.uf).id
+
+            guia.cnpj = loja.cnpj
+            guia.ie = loja.ie
+            guia.uf = loja.uf
+            guia.loja_id = loja.id
+            guia.site_id = site_id
+
+            guia.site = site
+
+
+        return guias

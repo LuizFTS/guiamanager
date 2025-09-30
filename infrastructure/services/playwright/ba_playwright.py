@@ -19,21 +19,19 @@ class GuiaGeneratorBAPlayWright(IGuiaGeneratorService):
 
         
         driver = PlaywrightDriver()
-        await driver.async_init()
+        await driver.async_init(headless=True)
         await driver.page.goto(guia.site)
 
         tipo = guia.tipo.lower()
         if tipo == "icms":
-            self._icms(guia, driver)
+            await self._icms(guia, driver)
         elif tipo == "st":
-            self._st(guia, driver)
+            await self._st(guia, driver)
         elif tipo == "ican":
-            self._antecipacao(guia, driver)
+            await self._antecipacao(guia, driver)
         else:
             raise ValueError(f"Tipo de guia {guia.tipo} não suportado para BA.")
 
-
-        driver.close()
         return os.path.join(guia.path_save, guia.file_name)
     
     
@@ -51,7 +49,7 @@ class GuiaGeneratorBAPlayWright(IGuiaGeneratorService):
                                                guia.uf, guia.notas, guia.fretes))
         await s.click_js("//*[@id='PHconteudoSemAjax_btn_visualizar']")
         await self._salvar_como_pdf(s, guia)
-        s.close()
+        await s.close()
 
     async def _antecipacao(self, guia: Guia, driver: PlaywrightDriver):
         s = driver
@@ -72,7 +70,7 @@ class GuiaGeneratorBAPlayWright(IGuiaGeneratorService):
         await s.press('/html/body', "End")
         await s.click_js("//*[@id='PHconteudoSemAjax_btn_visualizar']")
         await self._salvar_como_pdf(s, guia)
-        s.close()
+        await s.close()
 
     async def _st(self, guia: Guia, driver: PlaywrightDriver):
         s = driver
@@ -82,18 +80,18 @@ class GuiaGeneratorBAPlayWright(IGuiaGeneratorService):
         await self._preencher_datas_valores(s, guia)
 
         for i, valor in enumerate(guia.notas[:15], start=1):
-            input_path = ('//*[@id="PHConteudoSemAjax_txt_num_nota_fiscal"]'
-                          if i == 1 else f'//*[@id="PHConteudoSemAjax_txt_num_nota_fiscal{i}"]')
+            input_path = ('//*[@id="PHconteudoSemAjax_txt_num_nota_fiscal"]'
+                          if i == 1 else f'//*[@id="PHconteudoSemAjax_txt_num_nota_fiscal{i}"]')
             await s.digitar(input_path, valor)
 
-        await s.digitar('//*[@id="PHConteudoSemAjax_txt_qtd_nota_fiscal"]', str(len(guia.notas)))
-        await s.digitar('//*[@id="PHConteudoSemAjax_txt_des_informacoes_complementares"]',
+        await s.digitar('//*[@id="PHconteudoSemAjax_txt_qtd_nota_fiscal"]', str(len(guia.notas)))
+        await s.digitar('//*[@id="PHconteudoSemAjax_txt_des_informacoes_complementares"]',
                   ObservationOfPaymentSlipService.generate_text(guia.tipo, guia.periodo.strftime("%m/%Y"),
                                                guia.uf, guia.notas, guia.fretes))
         await s.press('/html/body', "End")
         await s.click_js("//*[@id='PHconteudoSemAjax_btn_visualizar']")
         await self._salvar_como_pdf(s, guia)
-        s.close()
+        await s.close()
 
     # ==========================
     # Auxiliares
@@ -112,7 +110,7 @@ class GuiaGeneratorBAPlayWright(IGuiaGeneratorService):
             """)
 
         await s.digitar_blur('//*[@id="PHconteudoSemAjax_txt_dtc_max_pagamento"]', guia.vencimento.strftime("%d%m%Y"))
-        await s.digitar_blur('//*[@id="PHconteudoSemAjax_txt_val_principal"]', guia.valor)
+        await s.digitar_blur('//*[@id="PHconteudoSemAjax_txt_val_principal"]', f"{float(guia.valor):.2f}")
         await s.digitar_blur('//*[@id="PHconteudoSemAjax_txt_mes_ano_referencia_6anos"]', guia.periodo.strftime("%m%Y"))
 
     async def _salvar_como_pdf(self, s: PlaywrightDriver, guia: Guia):

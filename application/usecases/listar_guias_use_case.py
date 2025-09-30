@@ -25,7 +25,7 @@ class ListarGuiasUseCase:
         
         guias = []
         for save in saved:
-            loja = self.loja_repo.get_by_id(save.loja_id[0])
+            loja = self.loja_repo.get_by_id(save.loja_id)
             save.filial = loja.filial
             save.cnpj = loja.cnpj
             save.ie = loja.ie

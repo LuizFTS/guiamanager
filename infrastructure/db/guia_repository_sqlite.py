@@ -44,7 +44,7 @@ class GuiaRepositorySQLite(IGuiaRepository):
                         (frete, guia_id)
                     )
 
-            return True
+            return guia_id
         except Exception as e:
             print(f"Erro ao salvar guia completo: {e}")
             return False
@@ -96,14 +96,14 @@ class GuiaRepositorySQLite(IGuiaRepository):
                 if not row:
                     return None
 
-                notas = [r["Numero"] for r in conn.execute("SELECT Numero FROM NotasGuia WHERE Guia_Id = ?", (guia_id,))]
-                fretes = [r["Numero"] for r in conn.execute("SELECT Numero FROM FretesGuia WHERE Guia_Id = ?", (guia_id,))]
+                notas = [r[0] for r in conn.execute("SELECT Numero FROM NotasGuia WHERE Guia_Id = ?", (guia_id,))]
+                fretes = [r[0] for r in conn.execute("SELECT Numero FROM FretesGuia WHERE Guia_Id = ?", (guia_id,))]
 
                 return Guia(
                     id=row[0],
                     filial="",  # preencher com dados de Loja se necessário
-                    loja_id=[1],
-                    site_id=[2],
+                    loja_id=row[1],
+                    site_id=row[2],
                     cnpj="",
                     ie="",
                     uf="",
@@ -128,14 +128,13 @@ class GuiaRepositorySQLite(IGuiaRepository):
                 if not row:
                     return None
 
-                print(row)
-                notas = [r["Numero"] for r in conn.execute("SELECT Numero FROM NotasGuia WHERE Guia_Id = ?", (row[0],))]
-                fretes = [r["Numero"] for r in conn.execute("SELECT Numero FROM FretesGuia WHERE Guia_Id = ?", (row[0],))]
+                notas = [r[0] for r in conn.execute("SELECT Numero FROM NotasGuia WHERE Guia_Id = ?", (row[0],))]
+                fretes = [r[0] for r in conn.execute("SELECT Numero FROM FretesGuia WHERE Guia_Id = ?", (row[0],))]
 
                 return Guia(
                     id=row[0],
-                    loja_id=[1],
-                    site_id=[2],
+                    loja_id=row[1],
+                    site_id=row[2],
                     filial="",  # preencher com dados de Loja se necessário
                     cnpj="",
                     ie="",
@@ -160,13 +159,13 @@ class GuiaRepositorySQLite(IGuiaRepository):
                 rows = conn.execute("SELECT * FROM Guias").fetchall()
                 guias = []
                 for row in rows:
-                    notas = [r["Numero"] for r in conn.execute("SELECT Numero FROM NotasGuia WHERE Guia_Id = ?", (row[0],))]
-                    fretes = [r["Numero"] for r in conn.execute("SELECT Numero FROM FretesGuia WHERE Guia_Id = ?", (row[0],))]
+                    notas = [r[0] for r in conn.execute("SELECT Numero FROM NotasGuia WHERE Guia_Id = ?", (row[0],))]
+                    fretes = [r[0] for r in conn.execute("SELECT Numero FROM FretesGuia WHERE Guia_Id = ?", (row[0],))]
                     guias.append(
                         Guia(
                             id=row[0],
-                            loja_id=[1],
-                            site_id=[2],
+                            loja_id=row[1],
+                            site_id=row[2],
                             filial="",
                             cnpj="",
                             ie="",

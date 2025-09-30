@@ -16,11 +16,11 @@ from interface.gui.forms.form_guia_gui import FormGuiaGUI
 
 
 class GuiaApp(tk.Tk):
-    def __init__(self, guia_controller: GuiaController,site_controller: SiteController, loja_controller: LojaController, path_dynamic_controller: PathDynamicController):
+    def __init__(self, excel_controller: ExcelController, guia_controller: GuiaController,site_controller: SiteController, loja_controller: LojaController, path_dynamic_controller: PathDynamicController):
         super().__init__()
         self.title("Gerador de Guias")
         self.guia_controller = guia_controller
-        #self.excel_controller = excel_controller
+        self.excel_controller = excel_controller
         self.site_controller = site_controller
         self.loja_controller = loja_controller
         self.path_dynamic_controller = path_dynamic_controller
@@ -29,7 +29,7 @@ class GuiaApp(tk.Tk):
         style.configure("Red.TFrame", background="red")
 
         # Botão importar Excel
-        btn_excel = ttk.Button(self, text="📂 Importar Excel")
+        btn_excel = ttk.Button(self, text="📂 Importar Excel", command=self.importar_excel)
         btn_excel.pack(pady=(0, 10))
 
         # Painel de visualização (TreePanel)
@@ -46,8 +46,11 @@ class GuiaApp(tk.Tk):
         self.editGuiaBtn = ttk.Button(frame_buttons_guia_crud, text="Editar", command=self.editar_guia)
         self.editGuiaBtn.grid(row=2, column=1, sticky="w", pady=0, padx=4)
 
-        deleteGuiaBtn = ttk.Button(frame_buttons_guia_crud, text="Excluir", command=self.delete_guia)
-        deleteGuiaBtn.grid(row=2, column=2, sticky="w", pady=0, padx=4)
+        deleteSelectedGuiaBtn = ttk.Button(frame_buttons_guia_crud, text="Excluir guia", command=self.delete_guia)
+        deleteSelectedGuiaBtn.grid(row=2, column=2, sticky="w", pady=0, padx=4)
+
+        deleteAllGuiaBtn = ttk.Button(frame_buttons_guia_crud, text="Excluir todos", command=self.delete_all)
+        deleteAllGuiaBtn.grid(row=2, column=3, sticky="w", pady=0, padx=4)
 
         # Botão gerar guias
         frame_buttons = ttk.Frame(self)
@@ -69,12 +72,17 @@ class GuiaApp(tk.Tk):
     # ==========================
     # Funções de integração com UseCases via Controller
     # ==========================
-    """ def importar_excel(self):
+    def importar_excel(self):
         path = filedialog.askopenfilename(filetypes=[("Excel files", "*.xlsx *.xls")])
         if path:
-            dados = self.excel_controller.importar_excel(path)
-            dados = sorted(dados, key=lambda d: (int(d.filial), d.uf))
-            self.tree_panel.set_dados(dados) """
+            guias = self.excel_controller.importar_excel(path)
+            guias = sorted(guias, key=lambda d: (int(d.filial), d.uf))
+            guia_ids = []
+            for guia in guias:
+                id = self.guia_controller.add(guia)
+                guia_ids.append(id)
+
+            self.tree_panel.set_dados(guia_ids)
 
     def gerar_guias(self):
         guias: list[Guia] = self.tree_panel.get_dados_direita()
@@ -102,7 +110,7 @@ class GuiaApp(tk.Tk):
         self.check_threads_completion()
 
     def processar_pdf_thread(self, guia: Guia):
-        pdf_generated = asyncio.run(self.controller.gerar_guia(guia))
+        pdf_generated = asyncio.run(self.guia_controller.gerar_guia(guia))
         status = "ok" if pdf_generated else "erro"
         self.tree_panel.after(0, lambda: self.tree_panel.atualizar_status(guia, status))
 
@@ -131,9 +139,22 @@ class GuiaApp(tk.Tk):
         if not selecionado:
             messagebox.showwarning("Aviso", "Selecione uma guia!")
             return
+        
+        self.guia_controller.delete(selecionado[0])
         result = self.tree_panel.deletar_guia(selecionado[0])
         if not result:
             messagebox.showwarning("Aviso", "Erro ao excluir guia.")
+
+    def delete_all(self):
+        if len(self.tree_panel.tree_esquerda.get_children()) < 1:
+            messagebox.showwarning("Aviso", "Nenhuma guia para ser excluída.")
+            return
+
+        if messagebox.askyesno("Confirmação", f"Deseja excluir todas as guias?"):
+            guias = self.guia_controller.get_all()
+            for guia in guias:
+                self.tree_panel.deletar_guia(guia.id)
+                self.guia_controller.delete(guia.id)
 
     # ==========================
     # Funções de Dialog / Config

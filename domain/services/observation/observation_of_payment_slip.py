@@ -20,6 +20,9 @@ class ObservationOfPaymentSlipService:
         if tipo in ("DIFAL", "ST") and uf == "BA":
             return f"Referente ao {tipo_map[tipo]} do período {periodo}."
 
+        if tipo in ("ICMS", "ICAU", "ICAN", "FOT"):
+            return f"Referente ao {tipo_map[tipo]} no periodo {periodo}."
+
         # Construção das partes
         partes = []
         if notas:

@@ -38,6 +38,17 @@ class Guia:
             "FOT": "FOT"
         }
         return tipo_map.get(self.tipo, "DESCONHECIDO")
+    @property
+    def tipo_arquivo(self) -> str:
+        tipo_map = {
+            "ICMS": "ICMS",
+            "DIFAL": "DIFE",
+            "ST": "ICST",
+            "ICAN": "ICAN",
+            "ICAU": "ICAU",
+            "FOT": "FOT"
+        }
+        return tipo_map.get(self.tipo, "DESCONHECIDO")
 
     @property
     def path_save(self) -> str:
@@ -58,4 +69,4 @@ class Guia:
         """
         Retorna o nome do arquivo PDF da guia
         """
-        return f"Lj{self.filial}_{self.tipo_destino}_{str(self.periodo.month).zfill(2)}{str(self.periodo.year)}.pdf"
+        return f"Lj{self.filial}_{self.tipo_arquivo}_{str(self.periodo.month).zfill(2)}{str(self.periodo.year)}.pdf"

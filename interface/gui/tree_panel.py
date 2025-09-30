@@ -3,7 +3,6 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 import locale
-import uuid
 from domain.entities.guia import Guia
 from interface.controllers.guia_controller import GuiaController
 
@@ -16,10 +15,6 @@ class TreePanel(ttk.Frame):
         self.alert_func = alert_func or (lambda title, msg: messagebox.showwarning(title, msg))
         self.colunas = ("Filial", "UF", "Tipo", "Valor", "Status")
         locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
-
-        # Dicionários para mapear item_id -> objeto Guia
-        self._objetos_esquerda = {}
-        self._objetos_direita = {}
 
         self.style = ttk.Style()
         self.style.configure("Treeview", rowheight=30)
@@ -55,10 +50,12 @@ class TreePanel(ttk.Frame):
                 self.adicionar_guia(guia)
                 
     def reload(self):
-        for item in self.tree_esquerda.get_children():
-            self.tree_esquerda.delete(item)
+        if len(self.tree_esquerda.get_children()) > 0:
 
-        self._initialize()
+            for item in self.tree_esquerda.get_children():
+                self.tree_esquerda.delete(item)
+
+            self._initialize()
     # ------------------------
     # Criação da TreeView
     # ------------------------
@@ -75,52 +72,93 @@ class TreePanel(ttk.Frame):
     # Funções de atualização
     # ------------------------
     def atualizar_status(self, guia: Guia, status: str):
-        iid = str(guia.id)
-        if iid not in self._objetos_direita:
-            return
+        iid = guia.id
         emoji = {"ok": "✅", "erro": "❌"}.get(status, "⏳")
+
         def _update():
             if self.tree_direita.exists(iid):
                 self.tree_direita.set(iid, "Status", emoji)
         self.after(0, _update)
 
     def marcar_todos_em_andamento(self):
-        for iid in self._objetos_direita.keys():
-            if self.tree_direita.exists(iid):
-                self.tree_direita.set(iid, "Status", "⏳")
+        for iid in self.tree_direita.get_children():
+            self.tree_direita.set(iid, "Status", "⏳")
 
     # ------------------------
     # Controle de dados
     # ------------------------
-    def set_dados(self, lista_dados: list[Guia]):
-        self.tree_esquerda.delete(*self.tree_esquerda.get_children())
-        self._objetos_esquerda.clear()
-        for d in lista_dados:
-            valores = (d.filial, d.uf, d.tipo, self._atualizar_valor(d.valor))
-            d.id = str(uuid.uuid4())
-            item_id = self.tree_esquerda.insert("", tk.END, values=valores, iid=d.id)
-            self._objetos_esquerda[item_id] = d
+    def set_dados(self, lista_dados: list[int]):
+        guias = {guia.id: guia for guia in self.guia_controller.get_all()}  # cria lookup por ID
+        for id in lista_dados:
+            guia = guias.get(id)
+            if guia:
+                valores = (guia.filial, guia.uf, guia.tipo, self._atualizar_valor(guia.valor))
+                self.tree_esquerda.insert("", tk.END, values=valores, iid=guia.id)
+                        
 
     def get_dados_direita(self) -> list[Guia]:
-        return [obj for obj in self._objetos_direita.values()]
+        dados = self.tree_direita.get_children()
+        guias = []
+        for d in dados:
+            guia = self.guia_controller.find_by_id(d)
+            if guia:
+                guias.append(guia)
+        return guias
 
     def get_dados_esquerda(self) -> list[Guia]:
-        return [obj for obj in self._objetos_esquerda.values()]
+        dados = self.tree_esquerda.get_children()
+        guias = []
+        for d in dados:
+            guia = self.guia_controller.find_by_id(d)
+            if guia:
+                guias.append(guia)
+        return guias
 
     def adicionar_guia(self, guia: Guia):
         valores = (guia.filial, guia.uf, guia.tipo, self._atualizar_valor(guia.valor))
-        item_id = self.tree_esquerda.insert("", tk.END, values=valores, iid=guia.id)
-        self._objetos_esquerda[item_id] = guia
+        self.tree_esquerda.insert("", tk.END, values=valores, iid=guia.id)
 
     def deletar_guia(self, guia_id: str):
-        if guia_id in self._objetos_esquerda:
-            if self.tree_esquerda.exists(guia_id):
-                self.tree_esquerda.delete(guia_id)
-            del self._objetos_esquerda[guia_id]
-            self.guia_controller.delete(guia_id)
-            self._reordenar_tree(self.tree_esquerda, self._objetos_esquerda)
+        items = list(self.tree_esquerda.get_children())
+        if guia_id not in items:
+            return False
+
+        index = items.index(guia_id)
+
+        # deleta o item
+        self.tree_esquerda.delete(guia_id)
+
+        # reordena a tree antes de definir o foco
+        self._reordenar_tree(self.tree_esquerda)
+
+        # obtém os itens atualizados
+        items_atualizados = list(self.tree_esquerda.get_children())
+
+        # escolhe próximo item ou anterior
+        next_item = None
+        if index < len(items_atualizados):
+            next_item = items_atualizados[index]  # próximo na nova ordem
+        elif index > 0:
+            next_item = items_atualizados[index - 1]
+
+        # foca no item escolhido
+        if next_item:
+            self.tree_esquerda.selection_set(next_item)
+            self.tree_esquerda.focus(next_item)
+
+        return True
+
+
+
+
+
+    def deletar_todas_as_guias(self):
+        guias = self.tree_esquerda.get_children()
+        for g in guias:
+            self.tree_esquerda.delete(g)
             return True
         return False
+        
 
     # ------------------------
     # Funções de movimentação
@@ -132,28 +170,34 @@ class TreePanel(ttk.Frame):
             return
         
         for item_id in selecao:
-
-
             next_item = self.tree_esquerda.next(item_id) or self.tree_esquerda.prev(item_id)
 
+
+
             # verifica se o item ainda existe
-            guia: Guia = self._objetos_esquerda.pop(item_id, None)
+            guia = self.guia_controller.find_by_id(item_id)
             if guia is None:
-                continue  # pula se já removido
+                continue
 
             # remove do dicionário e da treeview esquerda
             self.tree_esquerda.delete(item_id)
 
             # adiciona na treeview direita
-            valores = (guia.filial, guia.uf, guia.tipo, self._atualizar_valor(guia.valor), "-")  # status = loading
+            valores = (
+                guia.filial, 
+                guia.uf, 
+                guia.tipo, 
+                self._atualizar_valor(guia.valor), 
+                "-"
+                )  # status = loading
             self.tree_direita.insert("", tk.END, iid=guia.id, values=valores)
-            self._objetos_direita[guia.id] = guia
+            #self._objetos_direita[guia.id] = guia
 
             if next_item:
                 self.tree_esquerda.selection_set(next_item)
                 self.tree_esquerda.focus(next_item)
 
-        self._reordenar_tree(self.tree_direita, self._objetos_direita)
+        self._reordenar_tree(self.tree_direita)
 
     def mover_para_esquerda(self):
         selecao = self.tree_direita.selection()
@@ -169,7 +213,7 @@ class TreePanel(ttk.Frame):
                 next_item = self.tree_direita.prev(item_id)
             
             # verifica se o item ainda existe
-            guia: Guia = self._objetos_direita.pop(item_id, None)
+            guia = self.guia_controller.find_by_id(item_id)
             if guia is None:
                 continue  # pula se já removido
 
@@ -179,16 +223,22 @@ class TreePanel(ttk.Frame):
             # remove do dicionário e da treeview direita
 
             # adiciona na treeview esquerda
-            valores = (guia.filial, guia.uf, guia.tipo, self._atualizar_valor(guia.valor))
-            novo_id = self.tree_esquerda.insert("", tk.END, values=valores, iid=guia.id)
-            self._objetos_esquerda[novo_id] = guia
+            valores = (
+                guia.filial, 
+                guia.uf, 
+                guia.tipo, 
+                self._atualizar_valor(guia.valor)
+                )
+            
+            self.tree_esquerda.insert("", tk.END, values=valores, iid=guia.id)
+            #self._objetos_esquerda[novo_id] = guia
 
 
             if next_item:
                 self.tree_direita.selection_set(next_item)
                 self.tree_direita.focus(next_item)
 
-        self._reordenar_tree(self.tree_esquerda, self._objetos_esquerda)
+        self._reordenar_tree(self.tree_esquerda)
 
     def mover_todos_para_direita(self):
 
@@ -198,18 +248,16 @@ class TreePanel(ttk.Frame):
         
         for item_id in self.tree_esquerda.get_children():
 
-            obj = self._objetos_esquerda.get(item_id)
-            if not obj:
+            guia = self.guia_controller.find_by_id(item_id)
+            if not guia:
                 continue # pula se já removido
 
-            # remove do dicionário e da treeview direita
-            self._objetos_esquerda.pop(item_id)
+            # remove da treeview direita
             self.tree_esquerda.delete(item_id)
 
-            valores = (obj.filial, obj.uf, obj.tipo, self._atualizar_valor(obj.valor), "-")
-            novo_id = self.tree_direita.insert("", tk.END, values=valores)
-            self._objetos_direita[novo_id] = obj
-        self._reordenar_tree(self.tree_direita, self._objetos_direita)
+            valores = (guia.filial, guia.uf, guia.tipo, self._atualizar_valor(guia.valor), "-")
+            self.tree_direita.insert("", tk.END, values=valores, iid=guia.id)
+        self._reordenar_tree(self.tree_direita)
 
     def mover_todos_para_esquerda(self):
 
@@ -219,18 +267,16 @@ class TreePanel(ttk.Frame):
         
         for item_id in self.tree_direita.get_children():
 
-            obj = self._objetos_direita.get(item_id)
-            if not obj:
+            guia = self.guia_controller.find_by_id(item_id)
+            if not guia:
                 continue # pula se já removido
 
-            # remove do dicionário e da treeview direita
-            self._objetos_direita.pop(item_id)
+            # remove da treeview direita
             self.tree_direita.delete(item_id)
 
-            valores = (obj.filial, obj.uf, obj.tipo, self._atualizar_valor(obj.valor))
-            novo_id = self.tree_esquerda.insert("", tk.END, values=valores)
-            self._objetos_esquerda[novo_id] = obj
-        self._reordenar_tree(self.tree_esquerda, self._objetos_esquerda)
+            valores = (guia.filial, guia.uf, guia.tipo, self._atualizar_valor(guia.valor))
+            self.tree_esquerda.insert("", tk.END, values=valores, iid=guia.id)
+        self._reordenar_tree(self.tree_esquerda)
 
     # ------------------------
     # Auxiliares
@@ -238,11 +284,28 @@ class TreePanel(ttk.Frame):
     def _atualizar_valor(self, value):
         return locale.currency(float(value), grouping=True)
 
-    def _reordenar_tree(self, tree, objetos_dict):
-        items = [(item_id, objetos_dict[item_id]) for item_id in tree.get_children()]
-        items_ordenados = sorted(items, key=lambda t: (int(t[1].filial), t[1].uf))
-        tree.delete(*tree.get_children())
-        for _, obj in items_ordenados:
-            valores = (obj.filial, obj.uf, obj.tipo, self._atualizar_valor(obj.valor), "-")
-            novo_id = tree.insert("", tk.END, iid=obj.id, values=valores)
-            objetos_dict[novo_id] = obj
+    def _reordenar_tree(self, tree):
+        item_ids = tree.get_children()
+        objetos = []
+        for item_id in item_ids:
+            obj = self.guia_controller.find_by_id(item_id)
+            if obj:
+                objetos.append((item_id, obj))
+
+        objetos_ordenados = sorted(
+            objetos,
+            key=lambda t: (int(t[1].filial), t[1].uf)
+        )
+
+        tree.delete(*item_ids)
+
+        # 5️⃣ Re-inserir os itens já ordenados
+        for _, obj in objetos_ordenados:
+            valores = (
+                obj.filial,
+                obj.uf,
+                obj.tipo,
+                self._atualizar_valor(obj.valor),
+                "-"
+            )
+            tree.insert("", tk.END, iid=obj.id, values=valores)

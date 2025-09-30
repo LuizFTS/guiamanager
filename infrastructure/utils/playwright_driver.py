@@ -1,14 +1,14 @@
 from typing import Callable, Optional
 from playwright.async_api import Page, TimeoutError as PlaywrightTimeoutError, Page, Browser, Playwright, async_playwright
-
+import asyncio
+import os
 
 class PlaywrightDriver:
     """
     Wrapper para Playwright Page com ações básicas de interação e suporte a reCAPTCHA.
     """
 
-    def __init__(self, page: Page, error_handler: Optional[Callable[[Exception], None]] = None):
-        self.page = page
+    def __init__(self, error_handler: Optional[Callable[[Exception], None]] = None):
         self.error_handler = error_handler or (lambda e: print(f"Erro Playwright: {e}"))
 
         self.page: Optional[Page] = None
@@ -22,8 +22,27 @@ class PlaywrightDriver:
         """
         self.playwright = await async_playwright().start()
         self.browser = await self.playwright.chromium.launch(headless=headless)
-        self.page = await self.browser.new_page()
+        self.context = await self.browser.new_context(accept_downloads=True)
+        self.page = await self.context.new_page()
         return self
+
+    async def waitDownload(self, path: str, frame_name: str | None = None, path_download: str = None, file_download: str = None):
+
+        async with self.page.expect_download() as download_info:
+            await self.clicar(path, frame_name=frame_name)  # botão que gera o PDF
+
+        download = await download_info.value
+
+        # Nome e caminho final
+        final_path = os.path.join(path_download, file_download)
+
+        # Salva o arquivo no local desejado
+        await download.save_as(final_path)
+
+        print("PDF salvo em:", final_path)
+
+        await self.browser.close()
+
 
     # ==========================
     # Utilitário interno
@@ -41,46 +60,65 @@ class PlaywrightDriver:
     # ==========================
     # Funções solicitadas
     # ==========================
-    async def clicar(self, element_xpath: str):
+    async def clicar(self, element_xpath: str, frame_name: str | None = None):
         try:
-            element = await self._find(element_xpath)
-            if element:
-                await element.click()
+            locator = (
+                self.page.frame_locator(f"frame[name='{frame_name}']").locator(element_xpath)
+                if frame_name else
+                self.page.locator(element_xpath)
+            )
+
+            await locator.first.wait_for(state="visible")
+            await locator.first.click()
+
         except Exception as e:
             self.error_handler(e)
 
-    async def digitar(self, element_xpath: str, texto: str, limpar: bool = True):
+    async def digitar(self, element_xpath: str, texto: str, limpar: bool = True, frame_name: str | None = None):
         try:
-            element = await self._find(element_xpath)
-            if element:
+            if frame_name:
+                locator = self.page.frame_locator(f"frame[name='{frame_name}']").locator(element_xpath)
+            else:
+                locator = self.page.locator(element_xpath)
+
+            if await locator.count() > 0:
                 if limpar:
-                    await element.fill("")  # limpa antes
-                await element.type(texto)
+                    await locator.fill("")
+                await locator.type(texto)
+            else:
+                raise Exception(f"Elemento não encontrado: {element_xpath}")
         except Exception as e:
             self.error_handler(e)
 
-    async def digitar_blur(self, element_xpath: str, texto: str, limpar: bool = True):
-        """
-        Digita e em seguida envia Tab para "desfocar" o elemento.
-        """
+    async def digitar_blur(self, element_xpath: str, texto: str, limpar: bool = True, frame_name: str | None = None):
         try:
-            element = await self._find(element_xpath)
-            if element:
+            if frame_name:
+                locator = self.page.frame_locator(f"frame[name='{frame_name}']").locator(element_xpath)
+            else:
+                locator = self.page.locator(element_xpath)
+
+            if await locator.count() > 0:
                 if limpar:
-                    await element.fill("")
-                await element.type(texto)
-                await element.press("Tab")
+                    await locator.fill("")
+                await locator.type(texto)
+                await locator.evaluate("el => el.blur()")
+            else:
+                raise Exception(f"Elemento não encontrado: {element_xpath}")
         except Exception as e:
             self.error_handler(e)
 
-    async def selecionar(self, element_xpath: str, option: str):
+    async def selecionar(self, element_xpath: str, option: str, frame_name: str | None = None):
         """
         Seleciona uma opção de um elemento <select> pelo valor.
         """
         try:
-            element = await self._find(element_xpath)
-            if element:
-                await element.select_option(value=option)
+            if frame_name:
+                locator = self.page.frame_locator(f"frame[name='{frame_name}']").locator(element_xpath)
+            else:
+                locator = self.page.locator(element_xpath)
+            
+            if await locator.count() > 0:
+                await locator.select_option(value=option)
         except Exception as e:
             self.error_handler(e)
 
