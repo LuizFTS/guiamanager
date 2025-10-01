@@ -28,7 +28,7 @@ class GuiaController:
     def gerar_guia(self, guia: Guia):
         return self.gerar_guia_usecase.execute(guia)
     
-    def add(self, guia: Guia):
+    def add(self, guia: Guia) -> int:
         return self.adicionar_guia_usecase.execute(guia)
     
     def update(self, guia: Guia):

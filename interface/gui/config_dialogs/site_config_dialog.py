@@ -77,28 +77,35 @@ class SiteConfigDialog(tk.Toplevel):
     def abrir_formulario(self, uf_existente=None):
         popup = tk.Toplevel(self)
         popup.title("Cadastro de UF")
-        entradas = {}
+        self.entradas = {}
         for i, campo in enumerate(self.colunas):
             tk.Label(popup, text=campo, anchor="w").grid(row=i, column=0, padx=5, pady=5, sticky="w")
-            entrada = tk.Entry(popup, width=40)
-            entrada.grid(row=i, column=1, padx=5, pady=5)
-            entradas[campo] = entrada
+            self.entrada = tk.Entry(popup, width=40)
+            self.entrada.grid(row=i, column=1, padx=5, pady=5)
+            self.entradas[campo] = self.entrada
+
+            if i == 0:
+                self.entradas[campo].focus_set()
 
         if uf_existente:
             site = self.controller.find(uf_existente)
-            entradas["UF"].insert(0, uf_existente)
-            entradas["UF"].config(state="disabled")
+            self.entradas["UF"].insert(0, uf_existente)
+            self.entradas["UF"].config(state="disabled")
 
             # Preencher apenas os Entry's
-            for campo, entry in entradas.items():
+            for campo, entry in self.entradas.items():
                 atributo = campo.lower()
                 if hasattr(site, atributo):
                     entry.insert(0, getattr(site, atributo))
 
         tk.Button(popup, text="Salvar",
-                command=lambda: self.salvar_formulario(entradas, popup, uf_existente),
+                command=lambda: self.salvar_formulario(self.entradas, popup, uf_existente),
                 width=15).grid(row=len(self.colunas), columnspan=2, pady=10)
 
+    def _clear_camps(self):
+        for campo, entry in self.entradas.items():
+            entry.delete(0, tk.END)
+        self.entradas["UF"].focus_set()
 
     def salvar_formulario(self, entradas, popup, uf_existente):
         uf = entradas["UF"].get().strip().upper()
@@ -122,4 +129,4 @@ class SiteConfigDialog(tk.Toplevel):
             self.controller.add(data)
 
         self.atualizar_treeview()
-        popup.destroy()
+        self._clear_camps()

@@ -4,7 +4,7 @@ from typing import List, Optional
 
 class IGuiaRepository(ABC):
     @abstractmethod
-    def save(self, guia: Guia, loja_id: int, site_id: int) -> bool:
+    def save(self, guia: Guia, loja_id: int, site_id: int) -> int:
         # Salvar uma guia no repositório.
         pass
 

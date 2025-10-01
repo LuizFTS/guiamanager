@@ -1,9 +1,9 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from domain.entities.guia import Guia
 
-class IGuiaGeneratorService:
+class IReadExcelService:
     @abstractmethod
-    def gerar(self, guia: Guia) -> bool:
+    def read(self, path: str) -> list[Guia]:
         """ 
         Gera a guia e retorna o path do PDF salvo.
         Pode levantar DomainError em caso de falha.

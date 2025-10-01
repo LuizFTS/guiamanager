@@ -199,9 +199,9 @@ class FormGuiaGUI(tk.Toplevel):
             index = self.tipo['values'].index(guia.tipo)
             self.tipo.current(index)
             
-            self.valor.insert(0, str(guia.valor).replace(".", ","))
+            self.valor.insert(0, f"{float(guia.valor):.2f}".replace(".", ","))
             
-            self.fcp.insert(0, str(guia.fcp).replace(".",","))
+            self.fcp.insert(0, f"{float(guia.fcp):.2f}".replace(".",","))
             
             if guia.tipo in ("DIFAL", "ST"):
                 self.salvar_formulario_btn.grid(row=8, columnspan=2, pady=10)
@@ -225,6 +225,7 @@ class FormGuiaGUI(tk.Toplevel):
                 
             self._ajustar_layout_com_difal_ou_st_ou_ican()
 
+        
 
     def salvar_formulario(self):
         # Validação mínima
@@ -259,7 +260,8 @@ class FormGuiaGUI(tk.Toplevel):
         )
         
         if self.edit:
-            search_guia = self.guia_controller.find(guia.filial, guia.tipo)
+            id = self.tree.tree_esquerda.selection()[0]
+            search_guia = self.guia_controller.find_by_id(id)
             guia.id = search_guia.id
             self.guia_controller.update(guia)
             self.tree.reload()

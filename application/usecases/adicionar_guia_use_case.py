@@ -33,4 +33,4 @@ class AdicionarGuiaUseCase:
         if not saved:
             raise DomainError("Erro ao salvar as informações da loja.")
         
-        return True
+        return saved

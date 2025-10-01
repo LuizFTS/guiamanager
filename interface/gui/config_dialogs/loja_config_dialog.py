@@ -98,19 +98,27 @@ class LojaConfigDialog(tk.Toplevel):
     def abrir_formulario(self, numero_existente=None):
         popup = tk.Toplevel(self)
         popup.title("Filial")
-        entradas = {}
+
+        popup.focus_force()
+        self.entradas = {}
         for i, campo in enumerate(self.colunas):
             tk.Label(popup, text=campo, anchor="w").grid(row=i, column=0, padx=5, pady=5, sticky="w")
-            entrada = tk.Entry(popup, width=30)
-            entrada.grid(row=i, column=1, padx=5, pady=5)
-            entradas[campo] = entrada
+            self.entrada = tk.Entry(popup, width=30)
+            self.entrada.grid(row=i, column=1, padx=5, pady=5)
+            self.entradas[campo] = self.entrada
+
+            if i == 0:
+                primeiro_entry = self.entrada
+        
+        if primeiro_entry:
+            primeiro_entry.focus_set()
 
         if numero_existente:
             filial = self.controller.find(numero_existente)
-            entradas["Número"].insert(0, numero_existente)
-            entradas["Número"].config(state="disabled")
+            self.entradas["Número"].insert(0, numero_existente)
+            self.entradas["Número"].config(state="disabled")
 
-            for campo, entry in entradas.items():
+            for campo, entry in self.entradas.items():
                 atributo = 'filial' if campo == "Número" else campo.lower()
 
                 if hasattr(filial, atributo):
@@ -118,8 +126,16 @@ class LojaConfigDialog(tk.Toplevel):
 
 
         tk.Button(popup, text="Salvar",
-                  command=lambda: self.salvar_formulario(entradas, popup, numero_existente),
+                  command=lambda: self.salvar_formulario(self.entradas, popup, numero_existente),
                   width=15).grid(row=len(self.colunas), columnspan=2, pady=10)
+        
+        primeiro_entry.focus_set()
+
+    def _clear_camps(self):
+        for campo, entry in self.entradas.items():
+            entry.delete(0, tk.END)
+        self.entradas["Número"].focus_set()
+
 
     def salvar_formulario(self, entradas, popup, numero_existente):
         dados = {campo: entradas[campo].get().strip() for campo in self.colunas}
@@ -142,11 +158,11 @@ class LojaConfigDialog(tk.Toplevel):
         )
         
 
-        print(dados_formatados)
         if numero_existente:
             self.controller.atualizar(dados_formatados)
         else:
             self.controller.add(dados_formatados)
 
         self.atualizar_treeview()
-        popup.destroy()
+        self._clear_camps()
+        

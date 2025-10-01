@@ -3,6 +3,8 @@ from typing import Optional, List
 from dataclasses import dataclass, field
 from datetime import datetime, UTC
 import os
+import calendar
+import locale
 
 @dataclass
 class Guia:
@@ -38,18 +40,37 @@ class Guia:
             "FOT": "FOT"
         }
         return tipo_map.get(self.tipo, "DESCONHECIDO")
+    @property
+    def tipo_arquivo(self) -> str:
+        tipo_map = {
+            "ICMS": "ICMS",
+            "DIFAL": "DIFE",
+            "ST": "ICST",
+            "ICAN": "ICAN",
+            "ICAU": "ICAU",
+            "FOT": "FOT"
+        }
+        return tipo_map.get(self.tipo, "DESCONHECIDO")
 
     @property
     def path_save(self) -> str:
         """
         Retorna o caminho onde o PDF da guia deve ser salvo
         """
+        if isinstance(self.periodo, datetime):
+            year = str(self.periodo.year)
+            month = str(self.periodo.month).zfill(2)
+        else:
+            dt = datetime.strptime(str(self.periodo), "%m/%Y")
+            year = str(dt.year)
+            month = str(dt.month).zfill(2)
+
         path_to_save = os.path.join(
             r"C:\Users\lu9887091\OneDrive - Nutrien\Área de Trabalho\Nova pasta\GETVALUES\Guias pagas",
             f"Loja {self.filial}",
-            str(self.periodo.year),
+            year,
             self.tipo_destino,
-            f"{str(self.periodo.month).zfill(2)}-{self.periodo.year}"
+            f"{month}-{year}"
         )
         return path_to_save
 
@@ -58,4 +79,52 @@ class Guia:
         """
         Retorna o nome do arquivo PDF da guia
         """
-        return f"Lj{self.filial}_{self.tipo_destino}_{str(self.periodo.month).zfill(2)}{str(self.periodo.year)}.pdf"
+        if isinstance(self.periodo, datetime):
+            year = str(self.periodo.year)
+            month = str(self.periodo.month).zfill(2)
+        else:
+            dt = datetime.strptime(str(self.periodo), "%m/%Y")
+            year = str(dt.year)
+            month = str(dt.month).zfill(2)
+
+        file_name = f"Lj{self.filial}_{self.tipo_arquivo}_{month}{year}.pdf"
+
+
+        path = self.path_save
+        base, ext = os.path.splitext(file_name)
+        counter = 1
+        new_filename = file_name
+
+        while os.path.exists(os.path.join(path, new_filename)):
+            new_filename = f"{base}_{counter}{ext}"
+            counter += 1
+
+        return new_filename
+    
+    @property
+    def get_periodo_month_name(self):
+        locale.setlocale(locale.LC_TIME, "pt_BR.UTF-8")
+
+        if isinstance(self.periodo, datetime):
+            month = self.periodo.month
+            return calendar.month_name[month].capitalize()
+        else:
+            dt = datetime.strptime(str(self.periodo), "%m/%Y")
+            month = dt.month
+            return calendar.month_name[month].capitalize()
+        
+    @property
+    def get_periodo_year(self):
+        if isinstance(self.periodo, datetime):
+            year = self.periodo.year
+            return year
+        else:
+            dt = datetime.strptime(str(self.periodo), "%m/%Y")
+            year = dt.year
+            return year
+        
+    @property
+    def get_full_path(self):
+        path = self.path_save
+        file = self.file_name
+        return os.path.join(path, file)

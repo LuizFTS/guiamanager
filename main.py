@@ -2,6 +2,7 @@ from infrastructure.db.database import Database
 from infrastructure.db.migrations import CREATE_TABLES_SCRIPT
 
 from interface.gui.app import GuiaApp
+
 from interface.controllers.excel_controller import ExcelController
 from interface.controllers.guia_controller import GuiaController
 from interface.controllers.loja_controller import LojaController
@@ -36,6 +37,8 @@ from application.usecases.deletar_guia_use_case import DeletarGuiaUseCase
 from application.usecases.procurar_guia_by_id_use_case import ProcurarGuiaByIdUseCase
 from application.usecases.atualizar_guia_use_case import AtualizarGuiaUseCase
 
+from infrastructure.excel.excel_service import ExcelService
+
 def setup_database(db: Database):
 
     print(CREATE_TABLES_SCRIPT)
@@ -55,6 +58,7 @@ def main():
     test_connection(db)
 
     # Service
+    excel_service = ExcelService()
 
     # Repositories
     siteRepository = SiteRepositorySQLite(db)
@@ -62,7 +66,7 @@ def main():
     guiaRepository = GuiaRepositorySQLite(db)
 
     # UseCases
-    #importarGuiasExcelUseCase = ImportarGuiasExcelUseCase(siteRepository, lojaRepository, guiaRepository, )
+    importarGuiasExcelUseCase = ImportarGuiasExcelUseCase(siteRepository, lojaRepository, guiaRepository, excel_service)
 
     adicionar_site_use_case = AdicionarSiteUseCase(siteRepository)
     atualizar_site_use_case = AtualizarSiteUseCase(siteRepository)
@@ -89,12 +93,12 @@ def main():
     site = SiteController(adicionar_site_use_case, atualizar_site_use_case, deletar_site_use_case, listar_sites_use_case, procurar_site_use_case, procurar_url_site_use_case)
     loja = LojaController(adicionar_loja_use_case, atualizar_loja_use_case, deletar_loja_use_case, listar_lojas_use_case, procurar_loja_use_case)
     guia = GuiaController(gerar_guia_use_case, procurar_guia_use_case, adicionar_guia_use_case, listar_guias_use_case, deletar_guia_use_case, procurar_guia_by_id_use_case, atualizar_guia_use_case)
-    #excel = ExcelController(importarGuiasExcelUseCase)
+    excel = ExcelController(importarGuiasExcelUseCase)
     path = PathDynamicController(gerar_guia_use_case)
 
 
     # Inicializa Tkinter
-    app = GuiaApp(guia, site, loja, path)
+    app = GuiaApp(excel, guia, site, loja, path)
     app.mainloop()
 
 
