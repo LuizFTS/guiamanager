@@ -1,0 +1,16 @@
+b'<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <soap:Body>
+        <soap:Fault>
+            <soap:Code>
+                <soap:Value>soap:Receiver</soap:Value>
+            </soap:Code>
+            <soap:Reason>
+                <soap:Text xml:lang="en">System.Web.Services.Protocols.SoapException: Server was unable to process request. ---&gt; System.FormatException: String was not recognized as a valid DateTime.\r\n   at System.DateTime.ParseExact(String s, String format, IFormatProvider provider)\r\n   at SEFAZ.Arrecadacao.DUA.WsDua.Dominio.Comandos.Entrada.EmissaoDuaEntrada..ctor(XmlNode duaDadosMsg, ValidadorXML validadorXML) in D:\\azagent\\A1\\_work\\1194\\s\\src\\wsdua-dominio\\Comandos\\Entrada\\EmissaoDuaEntrada.cs:line 20\r\n   at SEFAZ.Arrecadacao.DUA.WsDua.DuaService.duaEmissao(XmlNode duaDadosMsg) in D:\\azagent\\A1\\_work\\1194\\s\\src\\wsdua\\DuaService.asmx.cs:line 66\r\n   --- End of inner exception stack trace ---</soap:Text>
+            </soap:Reason>
+            <soap:Detail />
+        </soap:Fault>
+    </soap:Body>
+</soap:Envelope>'

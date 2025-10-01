@@ -13,6 +13,8 @@ from interface.controllers.path_dynamic_controller import PathDynamicController
 from interface.gui.tree_panel import TreePanel
 from interface.gui.config_dialogs.menu_config import MenuConfig
 from interface.gui.forms.form_guia_gui import FormGuiaGUI
+from infrastructure.services.selenium.topdesk_chamado_selenium import TopdeskChamadoSelenium
+
 
 
 class GuiaApp(tk.Tk):
@@ -61,6 +63,8 @@ class GuiaApp(tk.Tk):
         frame_center.pack(side="top", expand=True)
         self.btn_gerar = ttk.Button(frame_center, text="🚀 Gerar guias", command=self.gerar_guias)
         self.btn_gerar.pack()
+        self.abrir_chamado_topdesk = ttk.Button(frame_center, text="Abrir chamado", command=self._abrir_chamado)
+        self.abrir_chamado_topdesk.pack()
 
         # Botão de configuração (canto direito)
         frame_right = ttk.Frame(frame_buttons)
@@ -94,7 +98,7 @@ class GuiaApp(tk.Tk):
         self.tree_panel.marcar_todos_em_andamento()
         self.threads = []
 
-        semaforo_geral = threading.Semaphore(5)
+        semaforo_geral = threading.Semaphore(3)
         semaforo_pa = threading.Semaphore(1)
 
         def wrapper(guia: Guia):
@@ -110,7 +114,7 @@ class GuiaApp(tk.Tk):
         self.check_threads_completion()
 
     def processar_pdf_thread(self, guia: Guia):
-        pdf_generated = asyncio.run(self.guia_controller.gerar_guia(guia))
+        pdf_generated = self.guia_controller.gerar_guia(guia)
         status = "ok" if pdf_generated else "erro"
         self.tree_panel.after(0, lambda: self.tree_panel.atualizar_status(guia, status))
 
@@ -155,6 +159,7 @@ class GuiaApp(tk.Tk):
             for guia in guias:
                 self.tree_panel.deletar_guia(guia.id)
                 self.guia_controller.delete(guia.id)
+            self.tree_panel.reload()
 
     # ==========================
     # Funções de Dialog / Config
@@ -177,3 +182,14 @@ class GuiaApp(tk.Tk):
         x = root_x + (root_w - largura) // 2
         y = root_y + (root_h - altura) // 2
         dialog.geometry(f"+{x}+{y}")
+
+    def _abrir_chamado(self):
+
+        guias: list[Guia] = self.tree_panel.get_dados_direita()
+        if not guias:
+            messagebox.showwarning("Aviso", "Nenhuma guia no quadro da direita!")
+            return
+        
+        for guia in guias:
+            service = TopdeskChamadoSelenium()
+            service.gerar(guia)

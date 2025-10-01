@@ -1,0 +1,7 @@
+# Certificados
+infrastructure/certs/*
+infrastructure/certs/.gitkeep
+
+# Banco de dados local
+infrastructure/data/*
+infrastructure/data/.gitkeep

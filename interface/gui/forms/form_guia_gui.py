@@ -260,7 +260,8 @@ class FormGuiaGUI(tk.Toplevel):
         )
         
         if self.edit:
-            search_guia = self.guia_controller.find(guia.filial, guia.tipo)
+            id = self.tree.tree_esquerda.selection()[0]
+            search_guia = self.guia_controller.find_by_id(id)
             guia.id = search_guia.id
             self.guia_controller.update(guia)
             self.tree.reload()
