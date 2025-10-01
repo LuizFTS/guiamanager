@@ -5,3 +5,9 @@ infrastructure/certs/.gitkeep
 # Banco de dados local
 infrastructure/data/*
 infrastructure/data/.gitkeep
+
+# Arquivos de cache do Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
