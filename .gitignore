@@ -1,0 +1,33 @@
+# Certificados
+infrastructure/certs/*
+infrastructure/certs/.gitkeep
+
+# Banco de dados local
+infrastructure/data/*
+infrastructure/data/.gitkeep
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Build / dist
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# VSCode
+.vscode/
+# PyCharm
+.idea/
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+*.log
+*.sqlite3          # se tiver DB local temporário
+*.db               # banco local (opcional, se for gerado)
+*.DS_Store         # macOS
+Thumbs.db          # Windows
