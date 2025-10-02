@@ -1,10 +1,10 @@
 from domain.entities.site import Site
-from application.usecases.adicionar_site_use_case import AdicionarSiteUseCase
-from application.usecases.atualizar_site_use_case import AtualizarSiteUseCase
-from application.usecases.deletar_site_use_case import DeletarSiteUseCase
-from application.usecases.listar_sites_use_case import ListarSitesUseCase
-from application.usecases.procurar_site_use_case import ProcurarSiteUseCase
-from application.usecases.procurar_url_site_use_case import ProcurarUrlSiteUseCase
+from application.usecases.adicionar_site_usecase import AdicionarSiteUseCase
+from application.usecases.atualizar_site_usecase import AtualizarSiteUseCase
+from application.usecases.deletar_site_usecase import DeletarSiteUseCase
+from application.usecases.listar_sites_usecase import ListarSitesUseCase
+from application.usecases.procurar_site_usecase import ProcurarSiteUseCase
+from application.usecases.procurar_url_site_usecase import ProcurarUrlSiteUseCase
 from typing import List
 
 

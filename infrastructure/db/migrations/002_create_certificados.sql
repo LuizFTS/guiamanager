@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS "Certificados" (
+    "Id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "Loja_Id" INTEGER NOT NULL,
+    "Cert_Path" TEXT NOT NULL,
+    "Key_Path" TEXT NOT NULL,
+    "Is_Active" INTEGER DEFAULT 1,
+    "Created_At" TEXT DEFAULT CURRENT_TIMESTAMP,
+    "Updated_At" TEXT,
+    FOREIGN KEY ("Loja_Id") REFERENCES "Lojas"("Id") ON DELETE CASCADE
+);

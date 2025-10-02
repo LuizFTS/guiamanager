@@ -13,15 +13,25 @@ class ObservationOfPaymentSlipService:
             "FOT": "FOT apurado"
         }
 
+        tipo_genero = {
+            "DIFAL": "o",
+            "ST": "a",       # feminino -> à
+            "ICMS": "o",
+            "ICAU": "o",
+            "ICAN": "o",
+            "FOT": "o"
+        }
+
         if tipo not in tipo_map:
             raise DomainError("Tipo de guia inválido para observação.")
 
         # Casos especiais
-        if tipo in ("DIFAL", "ST") and uf == "BA":
+        if tipo in ("DIFAL",) and uf == "BA":
             return f"Referente ao {tipo_map[tipo]} do período {periodo}."
-
+        if tipo in ("ST",) and uf == "BA":
+            return f"Referente à {tipo_map[tipo]} do período {periodo}."
         if tipo in ("ICMS", "ICAU", "ICAN", "FOT"):
-            return f"Referente ao {tipo_map[tipo]} no periodo {periodo}."
+            return f"Referente ao {tipo_map[tipo]} no período {periodo}."
 
         # Construção das partes
         partes = []
@@ -34,5 +44,29 @@ class ObservationOfPaymentSlipService:
 
         if not partes:
             raise DomainError("Nenhuma observação foi informada.")
+        
+        # Função para escolher artigo correto baseado na primeira palavra de cada parte
+        def artigo_para_parte(parte: str) -> str:
+            if parte.startswith("nota fiscal"):
+                return "da"
+            if parte.startswith("notas fiscais"):
+                return "das"
+            if parte.startswith("conhecimento de transporte"):
+                return "do"
+            if parte.startswith("conhecimentos de transporte"):
+                return "dos"
+            return "do"
 
-        return f"Referente ao {tipo_map[tipo]} das { ' e dos '.join(partes) if len(partes) == 2 else partes[0] } do período {periodo}."
+        # Define artigo das partes
+        if len(partes) == 2:
+            # plural, unir com 'e'
+            texto_partes = f"{partes[0]} e {partes[1]}"
+            artigo_partes = artigo_para_parte(partes[0])
+        else:
+            texto_partes = partes[0]
+            artigo_partes = artigo_para_parte(partes[0])
+
+        # Artigo do tipo
+        artigo_tipo = "à" if tipo_genero[tipo] == "a" else "ao"
+
+        return f"Referente {artigo_tipo} {tipo_map[tipo]} {artigo_partes} {texto_partes} do período {periodo}."

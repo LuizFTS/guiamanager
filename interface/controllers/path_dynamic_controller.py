@@ -1,5 +1,5 @@
 from domain.entities.guia import Guia
-from application.usecases.gerar_guia_use_case import GerarGuiaUseCase
+from application.usecases.gerar_guia_usecase import GerarGuiaUseCase
 
 
 class PathDynamicController:

@@ -1,9 +1,9 @@
 from domain.entities.loja import Loja
-from application.usecases.adicionar_loja_use_case import AdicionarLojaUseCase
-from application.usecases.atualizar_loja_use_case import AtualizarLojaUseCase
-from application.usecases.deletar_loja_use_case import DeletarLojaUseCase
-from application.usecases.listar_lojas_use_case import ListarLojasUseCase
-from application.usecases.procurar_loja_use_case import ProcurarLojaUseCase
+from application.usecases.adicionar_loja_usecase import AdicionarLojaUseCase
+from application.usecases.atualizar_loja_usecase import AtualizarLojaUseCase
+from application.usecases.deletar_loja_usecase import DeletarLojaUseCase
+from application.usecases.listar_lojas_usecase import ListarLojasUseCase
+from application.usecases.procurar_loja_usecase import ProcurarLojaUseCase
 
 from typing import List
 

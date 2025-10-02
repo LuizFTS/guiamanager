@@ -13,6 +13,7 @@ class GerarGuiaUseCase:
         generator = GuiaGeneratorFactory.create(guia.uf)
 
         guia.valor = f"{float(guia.valor):.2f}".replace(".", ",")
+        guia.fcp = f"{float(guia.fcp):.2f}".replace(".", ",")
         guia.periodo = guia.periodo.strftime('%m/%Y')
         guia.vencimento = guia.vencimento.strftime('%d/%m/%Y')
         

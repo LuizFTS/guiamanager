@@ -6,6 +6,7 @@ from infrastructure.services.selenium.mg_selenium import GuiaGeneratorMGSelenium
 from infrastructure.services.selenium.pa_selenium import GuiaGeneratorPASelenium
 from infrastructure.services.selenium.rj_selenium import GuiaGeneratorRJSelenium
 from infrastructure.services.selenium.to_selenium import GuiaGeneratorTOSelenium
+from infrastructure.services.selenium.sp_selenium import GuiaGeneratorSPSelenium
 from infrastructure.services.requests.mt_request import GuiaGeneratorMTRequest
 from infrastructure.services.webservice.es_webservice import GuiaGeneratorESWebService
 
@@ -29,5 +30,7 @@ class GuiaGeneratorFactory:
             return GuiaGeneratorESWebService()
         elif uf == "MT":
             return GuiaGeneratorMTRequest()
+        elif uf == "SP":
+            return GuiaGeneratorSPSelenium()
         
         raise ValueError(f"Não há serviço de geração para {uf}.")

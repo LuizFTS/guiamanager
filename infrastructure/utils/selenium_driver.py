@@ -1,5 +1,6 @@
 # infrastructure/utils/selenium_driver.py
 from time import sleep
+from infrastructure.exceptions.infrastructure_exception import InfrastructureException
 
 from selenium.webdriver.chrome.options import Options
 from selenium import webdriver
@@ -46,8 +47,13 @@ class SeleniumDriver:
             self.chrome_options.add_argument("--no-sandbox")
         self.chrome_options.add_argument("--start_maximized")
         self.driver = webdriver.Chrome(options=self.chrome_options)
-        self.files_before = set(os.listdir(self.path))
 
+        try:
+            self.files_before = set(os.listdir(self.path))        
+        except OSError as e:
+            raise InfrastructureException(f"Verifique se a pasta para a filial existe no caminho em que deve ser feito o download da guia.")
+
+    
     # ==========================
     # Ações básicas
     # ==========================
@@ -87,8 +93,8 @@ class SeleniumDriver:
     def digitar_por_elemento(self, element, text):
         element.send_keys(text)
 
-    def selecionar(self, path, option):
-        element = self._waitTillClickable(path)
+    def selecionar(self, path, option, timeout=30):
+        element = self._waitTillClickable(path, timeout)
         select = Select(element)
         select.select_by_value(option)
 
@@ -203,6 +209,7 @@ class SeleniumDriver:
         inicio = time.time()
         while True:
             try:
+                sleep(2)
                 shutil.move(old_path, new_path)
                 return True
             except PermissionError:

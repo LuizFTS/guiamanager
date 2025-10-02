@@ -13,6 +13,7 @@ from interface.controllers.path_dynamic_controller import PathDynamicController
 from interface.gui.tree_panel import TreePanel
 from interface.gui.config_dialogs.menu_config import MenuConfig
 from interface.gui.forms.form_guia_gui import FormGuiaGUI
+from interface.gui.handlers.exception_handler import ExceptionHandler
 from infrastructure.services.selenium.topdesk_chamado_selenium import TopdeskChamadoSelenium
 
 
@@ -73,22 +74,30 @@ class GuiaApp(tk.Tk):
         self.btn_config = ttk.Button(frame_right, image=self.icon_config, command=self.open_config)
         self.btn_config.pack(padx=10)
 
+
+
+        self.report_callback_exception = self.global_exception_handler
+
     # ==========================
     # Funções de integração com UseCases via Controller
     # ==========================
     def importar_excel(self):
         path = filedialog.askopenfilename(filetypes=[("Excel files", "*.xlsx *.xls")])
-        if path:
-            guias = self.excel_controller.importar_excel(path)
-            guias = sorted(guias, key=lambda d: (int(d.filial), d.uf))
-            guia_ids = []
-            for guia in guias:
-                id = self.guia_controller.add(guia)
-                guia_ids.append(id)
+        try:
+            if path:
+                guias = self.excel_controller.importar_excel(path)
+                guias = sorted(guias, key=lambda d: (int(d.filial), d.uf))
+                guia_ids = []
+                for guia in guias:
+                    id = self.guia_controller.add(guia)
+                    guia_ids.append(id)
 
-            self.tree_panel.set_dados(guia_ids)
+                self.tree_panel.set_dados(guia_ids)
+        except Exception as e:
+            ExceptionHandler.handle(e)
 
     def gerar_guias(self):
+
         guias: list[Guia] = self.tree_panel.get_dados_direita()
         if not guias:
             messagebox.showwarning("Aviso", "Nenhuma guia no quadro da direita!")
@@ -98,11 +107,11 @@ class GuiaApp(tk.Tk):
         self.tree_panel.marcar_todos_em_andamento()
         self.threads = []
 
-        semaforo_geral = threading.Semaphore(3)
-        semaforo_pa = threading.Semaphore(1)
+        semaphore_three_at_time = threading.Semaphore(3)
+        semaphore_one_at_time = threading.Semaphore(1)
 
         def wrapper(guia: Guia):
-            sem = semaforo_pa if guia.uf == "PA" else semaforo_geral
+            sem = semaphore_one_at_time if guia.uf == "PA" or guia.uf == "SP" else semaphore_three_at_time
             with sem:
                 self.processar_pdf_thread(guia)
 
@@ -114,13 +123,16 @@ class GuiaApp(tk.Tk):
         self.check_threads_completion()
 
     def processar_pdf_thread(self, guia: Guia):
-        pdf_generated = self.guia_controller.gerar_guia(guia)
+        try:
+            pdf_generated = self.guia_controller.gerar_guia(guia)
+        except Exception as e:
+            ExceptionHandler.handle(e)
         status = "ok" if pdf_generated else "erro"
         self.tree_panel.after(0, lambda: self.tree_panel.atualizar_status(guia, status))
 
     def check_threads_completion(self):
         if all(not t.is_alive() for t in self.threads):
-            messagebox.showinfo("Aviso", "Processo concluído!")
+            messagebox.showinfo("Aviso", "Processo finalizados.")
             self.btn_gerar.config(state="enable")
         else:
             self.after(100, self.check_threads_completion)
@@ -193,3 +205,8 @@ class GuiaApp(tk.Tk):
         for guia in guias:
             service = TopdeskChamadoSelenium()
             service.gerar(guia)
+
+
+    def global_exception_handler(self, exc_type, exc_value, exc_traceback):
+
+        ExceptionHandler.handle(exc_value)

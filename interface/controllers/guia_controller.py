@@ -1,11 +1,11 @@
 from domain.entities.guia import Guia
-from application.usecases.gerar_guia_use_case import GerarGuiaUseCase
-from application.usecases.procurar_guia_use_case import ProcurarGuiaUseCase
-from application.usecases.adicionar_guia_use_case import AdicionarGuiaUseCase
-from application.usecases.listar_guias_use_case import ListarGuiasUseCase
-from application.usecases.deletar_guia_use_case import DeletarGuiaUseCase
-from application.usecases.procurar_guia_by_id_use_case import ProcurarGuiaByIdUseCase
-from application.usecases.atualizar_guia_use_case import AtualizarGuiaUseCase
+from application.usecases.gerar_guia_usecase import GerarGuiaUseCase
+from application.usecases.procurar_guia_usecase import ProcurarGuiaUseCase
+from application.usecases.adicionar_guia_usecase import AdicionarGuiaUseCase
+from application.usecases.listar_guias_usecase import ListarGuiasUseCase
+from application.usecases.deletar_guia_usecase import DeletarGuiaUseCase
+from application.usecases.procurar_guia_by_id_usecase import ProcurarGuiaByIdUseCase
+from application.usecases.atualizar_guia_usecase import AtualizarGuiaUseCase
 
 class GuiaController:
     def __init__(self, 

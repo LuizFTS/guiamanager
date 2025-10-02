@@ -1,5 +1,5 @@
 from domain.entities.guia import Guia
-from application.usecases.importar_guias_excel_use_case import ImportarGuiasExcelUseCase
+from application.usecases.importar_guias_excel_usecase import ImportarGuiasExcelUseCase
 
 
 class ExcelController:

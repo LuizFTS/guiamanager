@@ -1,5 +1,5 @@
 from infrastructure.db.database import Database
-from infrastructure.db.migrations import CREATE_TABLES_SCRIPT
+from infrastructure.db.migrations.migrations import CREATE_TABLES_SCRIPT
 
 from interface.gui.app import GuiaApp
 
@@ -9,40 +9,40 @@ from interface.controllers.loja_controller import LojaController
 from interface.controllers.path_dynamic_controller import PathDynamicController
 from interface.controllers.site_controller import SiteController
 
-from application.usecases.importar_guias_excel_use_case import ImportarGuiasExcelUseCase
+from application.usecases.importar_guias_excel_usecase import ImportarGuiasExcelUseCase
 
 from infrastructure.db.site_repository_sqlite import SiteRepositorySQLite
 from infrastructure.db.loja_repository_sqlite import LojaRepositorySQLite
 from infrastructure.db.guia_repository_sqlite import GuiaRepositorySQLite
 
 
-from application.usecases.adicionar_site_use_case import AdicionarSiteUseCase
-from application.usecases.atualizar_site_use_case import AtualizarSiteUseCase
-from application.usecases.deletar_site_use_case import DeletarSiteUseCase
-from application.usecases.listar_sites_use_case import ListarSitesUseCase
-from application.usecases.procurar_site_use_case import ProcurarSiteUseCase
-from application.usecases.procurar_url_site_use_case import ProcurarUrlSiteUseCase
+from application.usecases.adicionar_site_usecase import AdicionarSiteUseCase
+from application.usecases.atualizar_site_usecase import AtualizarSiteUseCase
+from application.usecases.deletar_site_usecase import DeletarSiteUseCase
+from application.usecases.listar_sites_usecase import ListarSitesUseCase
+from application.usecases.procurar_site_usecase import ProcurarSiteUseCase
+from application.usecases.procurar_url_site_usecase import ProcurarUrlSiteUseCase
 
-from application.usecases.adicionar_loja_use_case import AdicionarLojaUseCase
-from application.usecases.atualizar_loja_use_case import AtualizarLojaUseCase
-from application.usecases.deletar_loja_use_case import DeletarLojaUseCase
-from application.usecases.listar_lojas_use_case import ListarLojasUseCase
-from application.usecases.procurar_loja_use_case import ProcurarLojaUseCase
+from application.usecases.adicionar_loja_usecase import AdicionarLojaUseCase
+from application.usecases.atualizar_loja_usecase import AtualizarLojaUseCase
+from application.usecases.deletar_loja_usecase import DeletarLojaUseCase
+from application.usecases.listar_lojas_usecase import ListarLojasUseCase
+from application.usecases.procurar_loja_usecase import ProcurarLojaUseCase
 
-from application.usecases.gerar_guia_use_case import GerarGuiaUseCase
-from application.usecases.procurar_guia_use_case import ProcurarGuiaUseCase
-from application.usecases.adicionar_guia_use_case import AdicionarGuiaUseCase
-from application.usecases.listar_guias_use_case import ListarGuiasUseCase
-from application.usecases.deletar_guia_use_case import DeletarGuiaUseCase
-from application.usecases.procurar_guia_by_id_use_case import ProcurarGuiaByIdUseCase
-from application.usecases.atualizar_guia_use_case import AtualizarGuiaUseCase
+from application.usecases.gerar_guia_usecase import GerarGuiaUseCase
+from application.usecases.procurar_guia_usecase import ProcurarGuiaUseCase
+from application.usecases.adicionar_guia_usecase import AdicionarGuiaUseCase
+from application.usecases.listar_guias_usecase import ListarGuiasUseCase
+from application.usecases.deletar_guia_usecase import DeletarGuiaUseCase
+from application.usecases.procurar_guia_by_id_usecase import ProcurarGuiaByIdUseCase
+from application.usecases.atualizar_guia_usecase import AtualizarGuiaUseCase
 
 from infrastructure.excel.excel_service import ExcelService
+from infrastructure.db.migrations.migrate import main as run_migrations
 
-def setup_database(db: Database):
+def setup_database():
 
-    print(CREATE_TABLES_SCRIPT)
-    db.execute_script(CREATE_TABLES_SCRIPT)
+    run_migrations()
 
     print("Banco de dados criado e pronto para uso!")
 
@@ -54,7 +54,7 @@ def test_connection(db: Database):
 
 def main():
     db = Database()
-    setup_database(db)
+    setup_database()
     test_connection(db)
 
     # Service
