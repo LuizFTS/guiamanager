@@ -5,17 +5,17 @@ class ObservationOfPaymentSlipService:
     @classmethod
     def generate_text(cls, tipo: str, periodo: str, uf: str, notas: list[str], fretes: list[str]) -> str:
         tipo_map = {
-            "DIFAL": "diferencial de alíquotas",
-            "ST": "substituição tributária",
+            "DIFAL": "diferencial de aliquotas",
+            "ST": "substituicao tributaria",
             "ICMS": "ICMS apurado",
-            "ICAU": "ICMS dos fretes autônomos apurado",
+            "ICAU": "ICMS dos fretes autonomos apurado",
             "ICAN": "ICMS antecipado apurado",
             "FOT": "FOT apurado"
         }
 
         tipo_genero = {
             "DIFAL": "o",
-            "ST": "a",       # feminino -> à
+            "ST": "a",
             "ICMS": "o",
             "ICAU": "o",
             "ICAN": "o",
@@ -27,11 +27,11 @@ class ObservationOfPaymentSlipService:
 
         # Casos especiais
         if tipo in ("DIFAL",) and uf == "BA":
-            return f"Referente ao {tipo_map[tipo]} do período {periodo}."
+            return f"Referente ao {tipo_map[tipo]} do periodo {periodo}."
         if tipo in ("ST",) and uf == "BA":
-            return f"Referente à {tipo_map[tipo]} do período {periodo}."
+            return f"Referente a {tipo_map[tipo]} do periodo {periodo}."
         if tipo in ("ICMS", "ICAU", "ICAN", "FOT"):
-            return f"Referente ao {tipo_map[tipo]} no período {periodo}."
+            return f"Referente ao {tipo_map[tipo]} no periodo {periodo}."
 
         # Construção das partes
         partes = []
@@ -43,7 +43,7 @@ class ObservationOfPaymentSlipService:
             partes.append(f"{prefixo} {', '.join(fretes)}")
 
         if not partes:
-            raise DomainError("Nenhuma observação foi informada.")
+            raise DomainError("Nenhuma observacao foi informada.")
         
         # Função para escolher artigo correto baseado na primeira palavra de cada parte
         def artigo_para_parte(parte: str) -> str:
@@ -67,6 +67,6 @@ class ObservationOfPaymentSlipService:
             artigo_partes = artigo_para_parte(partes[0])
 
         # Artigo do tipo
-        artigo_tipo = "à" if tipo_genero[tipo] == "a" else "ao"
+        artigo_tipo = "a" if tipo_genero[tipo] == "a" else "ao"
 
-        return f"Referente {artigo_tipo} {tipo_map[tipo]} {artigo_partes} {texto_partes} do período {periodo}."
+        return f"Referente {artigo_tipo} {tipo_map[tipo]} {artigo_partes} {texto_partes} do periodo {periodo}."
