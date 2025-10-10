@@ -245,8 +245,8 @@ class FormGuiaGUI(tk.Toplevel):
             "tipo": self.tipo.get(),
             "valor": self.valor.get().replace(",", "."),
             "fcp": self.fcp.get().replace(",", "."),
-            "notas": self.notas.get() if self.tipo.get() in ("DIFAL", "ST", "ICAN") else [],  # Aqui você pode incluir lógica de parseamento
-            "fretes": self.fretes.get() if self.tipo.get() in ("DIFAL", "ST") else [],
+            "notas": [self.notas.get()] if self.tipo.get() in ("DIFAL", "ST", "ICAN") else [],  # Aqui você pode incluir lógica de parseamento
+            "fretes": [self.fretes.get()] if self.tipo.get() in ("DIFAL", "ST") else [],
             "cnpj": lojainfo.cnpj,
             "ie": lojainfo.ie,
             "uf": lojainfo.uf,
@@ -258,6 +258,7 @@ class FormGuiaGUI(tk.Toplevel):
         guia = Guia(
             **guia_data
         )
+        print(guia)
         
         if self.edit:
             id = self.tree.tree_esquerda.selection()[0]

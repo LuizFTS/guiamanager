@@ -31,7 +31,9 @@ class GuiaRepositorySQLite(IGuiaRepository):
                 guia_id = cursor.lastrowid
 
                 # Inserir notas
+                print(guia.notas)
                 for nota in guia.notas:
+                    print(nota)
                     conn.execute(
                         "INSERT INTO NotasGuia (Numero, Guia_Id) VALUES (?, ?)",
                         (nota, guia_id)
@@ -83,6 +85,7 @@ class GuiaRepositorySQLite(IGuiaRepository):
                         guia.id
                     )
                 )
+
             return cursor.rowcount > 0
         except Exception as e:
             print(f"Erro ao atualizar guia: {e}")

@@ -1,5 +1,4 @@
 from infrastructure.db.database import Database
-from infrastructure.db.migrations.migrations import CREATE_TABLES_SCRIPT
 
 from interface.gui.app import GuiaApp
 

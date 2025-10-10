@@ -64,8 +64,8 @@ class GuiaApp(tk.Tk):
         frame_center.pack(side="top", expand=True)
         self.btn_gerar = ttk.Button(frame_center, text="🚀 Gerar guias", command=self.gerar_guias)
         self.btn_gerar.pack()
-        self.abrir_chamado_topdesk = ttk.Button(frame_center, text="Abrir chamado", command=self._abrir_chamado)
-        self.abrir_chamado_topdesk.pack()
+        #self.abrir_chamado_topdesk = ttk.Button(frame_center, text="Abrir chamado", command=self._abrir_chamado)
+        #self.abrir_chamado_topdesk.pack()
 
         # Botão de configuração (canto direito)
         frame_right = ttk.Frame(frame_buttons)
@@ -126,6 +126,7 @@ class GuiaApp(tk.Tk):
         try:
             pdf_generated = self.guia_controller.gerar_guia(guia)
         except Exception as e:
+            pdf_generated = False
             ExceptionHandler.handle(e)
         status = "ok" if pdf_generated else "erro"
         self.tree_panel.after(0, lambda: self.tree_panel.atualizar_status(guia, status))

@@ -40,7 +40,6 @@ class GuiaGeneratorMGSelenium(IGuiaGeneratorService):
             self.driver.quit()
             return False
 
-
     # ==========================
     # Funções de geração
     # ==========================
@@ -58,7 +57,7 @@ class GuiaGeneratorMGSelenium(IGuiaGeneratorService):
         s.clicar('//*[@id="divReceita"]/div/div[2]/span[10]')
 
         s.digitar('//*[@id="dtVencimento"]', guia.vencimento)
-        s.digitar('//*[@id="dtPagamento"]', guia.vencimento)
+        s.digitar('//*[@id="dtPagamento"]', guia.getPaymentDate)
 
         s.clicar('//*[@id="containerConteudoPrincipal"]/div/form/table[4]/tbody/tr[6]/td[3]/div/input')
         s.clicar('//*[@id="containerConteudoPrincipal"]/div/form/table[4]/tbody/tr[6]/td[3]/div/div[2]/span[2]')
@@ -74,6 +73,8 @@ class GuiaGeneratorMGSelenium(IGuiaGeneratorService):
         )
 
         s.digitar('//*[@id="divMultaJurosCalcular"]/table/tbody/tr[1]/td[2]/input', guia.valor)
+        s.clicar('//*[@id="divMultaJurosCalcular"]/table/tbody/tr[2]/td[3]/a')
+        WebDriverWait(s.driver, 10).until(EC.alert_is_present()).accept()
         s.digitar('//*[@id="containerConteudoPrincipal"]/div/form/table[4]/tbody/tr[12]/td[2]/textarea', 
                   ObservationOfPaymentSlipService.generate_text(guia.tipo, guia.periodo, guia.uf, guia.notas, guia.fretes))
         s.clicar('//*[@id="containerConteudoPrincipal"]/div/form/table[5]/tbody/tr/td[1]/a')
@@ -96,7 +97,7 @@ class GuiaGeneratorMGSelenium(IGuiaGeneratorService):
         s.clicar('//*[@id="divReceita"]/div/div[2]/span[text()="0317-8 - ICMS DIFERENCA DE ALIQUOTA"]')
 
         s.digitar('//*[@id="dtVencimento"]', guia.vencimento)
-        s.digitar('//*[@id="dtPagamento"]', guia.vencimento)
+        s.digitar('//*[@id="dtPagamento"]', guia.getPaymentDate)
 
         s.clicar('//*[@id="containerConteudoPrincipal"]/div/form/table[4]/tbody/tr[6]/td[3]/div/input')
         s.clicar('//*[@id="containerConteudoPrincipal"]/div/form/table[4]/tbody/tr[6]/td[3]/div/div[2]/span[2]')
@@ -114,6 +115,8 @@ class GuiaGeneratorMGSelenium(IGuiaGeneratorService):
         )
 
         s.digitar('//*[@id="divMultaJurosCalcular"]/table/tbody/tr[1]/td[2]/input', guia.valor)
+        s.clicar('//*[@id="divMultaJurosCalcular"]/table/tbody/tr[2]/td[3]/a')
+        WebDriverWait(s.driver, 10).until(EC.alert_is_present()).accept()
         s.digitar('//*[@id="containerConteudoPrincipal"]/div/form/table[4]/tbody/tr[12]/td[2]/textarea', 
                   ObservationOfPaymentSlipService.generate_text(guia.tipo, guia.periodo, guia.uf, guia.notas, guia.fretes))
         s.clicar('//*[@id="containerConteudoPrincipal"]/div/form/table[5]/tbody/tr/td[1]/a')
@@ -136,7 +139,7 @@ class GuiaGeneratorMGSelenium(IGuiaGeneratorService):
         s.clicar('//*[@id="divReceita"]/div/div[2]/span[text()="0313-7 - ICMS ST RECOLHIMENTO ANTECIPADO"]')
 
         s.digitar('//*[@id="dtVencimento"]', guia.vencimento)
-        s.digitar('//*[@id="dtPagamento"]', guia.vencimento)
+        s.digitar('//*[@id="dtPagamento"]', guia.getPaymentDate)
 
         s.clicar('//*[@id="containerConteudoPrincipal"]/div/form/table[4]/tbody/tr[6]/td[3]/div/input')
         s.clicar('//*[@id="containerConteudoPrincipal"]/div/form/table[4]/tbody/tr[6]/td[3]/div/div[2]/span[2]')
@@ -154,7 +157,10 @@ class GuiaGeneratorMGSelenium(IGuiaGeneratorService):
         )
 
         s.digitar('//*[@id="divMultaJurosCalcular"]/table/tbody/tr[1]/td[2]/input', guia.valor)
+        s.clicar('//*[@id="divMultaJurosCalcular"]/table/tbody/tr[2]/td[3]/a')
+        WebDriverWait(s.driver, 10).until(EC.alert_is_present()).accept()
         s.digitar('//*[@id="containerConteudoPrincipal"]/div/form/table[4]/tbody/tr[12]/td[2]/textarea', 
                   ObservationOfPaymentSlipService.generate_text(guia.tipo, guia.periodo, guia.uf, guia.notas, guia.fretes))
         s.clicar('//*[@id="containerConteudoPrincipal"]/div/form/table[5]/tbody/tr/td[1]/a')
         s.clicar('//*[@id="formasPagamento"]/div[6]/button/a')
+

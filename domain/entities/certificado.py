@@ -9,8 +9,8 @@ class Certificado:
     filial: str
     cert_path: str
     key_path: str
-    is_active: bool = True
     updated_at: datetime
+    is_active: bool = True
     created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     id: Optional[int] = field(default=None)
     

@@ -1,7 +1,7 @@
 
 from typing import Optional, List
 from dataclasses import dataclass, field
-from datetime import datetime, UTC
+from datetime import datetime, UTC, timedelta
 import os
 import calendar
 import locale
@@ -129,3 +129,28 @@ class Guia:
         path = self.path_save
         file = self.file_name
         return os.path.join(path, file)
+    
+    @property
+    def getPaymentDate(self):
+        if isinstance(self.vencimento, datetime):
+            dueDate = self.vencimento
+        else:
+            dueDate = datetime.strptime(self.vencimento, "%d/%m/%Y")
+        
+        today = datetime.now().date()
+        if dueDate.date() > today:
+            return dueDate.strftime("%d/%m/%Y")
+        else:
+
+            hoje = datetime.now().date()
+            now = datetime.now()
+
+            if now.hour >= 9:
+                proximo_dia = hoje + timedelta(days=1)
+                while proximo_dia.weekday() >= 5:  # sábado=5, domingo=6
+                    proximo_dia += timedelta(days=1)
+                nova_data = datetime.combine(proximo_dia, dueDate.time())
+            else:
+                nova_data = datetime.combine(hoje, dueDate.time())
+
+            return nova_data.strftime("%d/%m/%Y")

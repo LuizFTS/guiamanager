@@ -3,12 +3,12 @@ from domain.services.i_guia_generator_service import IGuiaGeneratorService
 from domain.services.observation.observation_of_payment_slip import ObservationOfPaymentSlipService
 
 import requests
-from requests_toolbelt.multipart.encoder import MultipartEncoder
 from collections import OrderedDict
 import socket
 from datetime import datetime, timedelta
 import pandas as pd
 from math import floor
+from requests_toolbelt.multipart.encoder import MultipartEncoder
 
 class GuiaGeneratorMTRequest(IGuiaGeneratorService):
 
