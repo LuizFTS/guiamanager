@@ -2,43 +2,51 @@ from domain.services.i_guia_generator_service import IGuiaGeneratorService
 from domain.entities.guia import Guia
 from domain.services.observation.observation_of_payment_slip import ObservationOfPaymentSlipService
 from infrastructure.utils.selenium_driver import SeleniumDriver
+from interface.gui.handlers.exception_handler import ExceptionHandler
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 
 class GuiaGeneratorMGSelenium(IGuiaGeneratorService):
 
-    def gerar(self, guia: Guia) -> str:
+    def gerar(self, guia: Guia) -> bool:
         """
         Gera a guia de acordo com o tipo.
         Retorna o path do PDF gerado.
         """
-        self.path = guia.path_save
-        self.file_name = guia.file_name
-        
-        self.driver = SeleniumDriver(guia.path_save, headless=True)
-        self.driver.driver.get(guia.site)
 
-        tipo = guia.tipo.lower()
-        if tipo == "icms":
-            self._icms(guia)
-        elif tipo == "difal":
-            self._difal(guia)
-        elif tipo == "st":
-            self._st(guia)
-        else:
-            raise ValueError(f"Tipo de guia {guia.tipo} não suportado para BA.")
 
-        pdf_saved = self.driver.compare_files_before_and_after_download_pdf_file(self.path, self.file_name)
-        if pdf_saved:
-            print(f"PDF da loja {guia.filial} salva: {self.file_name}")
-            self.driver.quit()
-            return True
-        else:
-            print(f"Erro ao salvar pdf da loja {guia.filial}.")
-            self.driver.quit()
+        try:
+            self.path = guia.path_save
+            self.file_name = guia.file_name
+            
+            self.driver = SeleniumDriver(guia.path_save, headless=False)
+            self.driver.driver.get(guia.site)
+
+            tipo = guia.tipo.lower()
+            if tipo == "icms":
+                self._icms(guia)
+            elif tipo == "difal":
+                self._difal(guia)
+            elif tipo == "st":
+                self._st(guia)
+            else:
+                raise ValueError(f"Tipo de guia {guia.tipo} não suportado para MG.")
+
+            pdf_saved = self.driver.compare_files_before_and_after_download_pdf_file(self.path, self.file_name)
+            if pdf_saved:
+                print(f"PDF da loja {guia.filial} salva: {self.file_name}")
+                return True
+            else:
+                print(f"Erro ao salvar pdf da loja {guia.filial}.")
+                return False
+        except Exception as e:
+            ExceptionHandler.handle(e)
             return False
+        finally:
+            self.driver.quit()
 
     # ==========================
     # Funções de geração
@@ -74,7 +82,13 @@ class GuiaGeneratorMGSelenium(IGuiaGeneratorService):
 
         s.digitar('//*[@id="divMultaJurosCalcular"]/table/tbody/tr[1]/td[2]/input', guia.valor)
         s.clicar('//*[@id="divMultaJurosCalcular"]/table/tbody/tr[2]/td[3]/a')
-        WebDriverWait(s.driver, 10).until(EC.alert_is_present()).accept()
+
+        try:
+            alert = WebDriverWait(s.driver, 10).until(EC.alert_is_present())
+            alert.accept()
+        except TimeoutException:
+            pass
+
         s.digitar('//*[@id="containerConteudoPrincipal"]/div/form/table[4]/tbody/tr[12]/td[2]/textarea', 
                   ObservationOfPaymentSlipService.generate_text(guia.tipo, guia.periodo, guia.uf, guia.notas, guia.fretes))
         s.clicar('//*[@id="containerConteudoPrincipal"]/div/form/table[5]/tbody/tr/td[1]/a')
@@ -116,7 +130,11 @@ class GuiaGeneratorMGSelenium(IGuiaGeneratorService):
 
         s.digitar('//*[@id="divMultaJurosCalcular"]/table/tbody/tr[1]/td[2]/input', guia.valor)
         s.clicar('//*[@id="divMultaJurosCalcular"]/table/tbody/tr[2]/td[3]/a')
-        WebDriverWait(s.driver, 10).until(EC.alert_is_present()).accept()
+        try:
+            alert = WebDriverWait(s.driver, 10).until(EC.alert_is_present())
+            alert.accept()
+        except TimeoutException:
+            pass
         s.digitar('//*[@id="containerConteudoPrincipal"]/div/form/table[4]/tbody/tr[12]/td[2]/textarea', 
                   ObservationOfPaymentSlipService.generate_text(guia.tipo, guia.periodo, guia.uf, guia.notas, guia.fretes))
         s.clicar('//*[@id="containerConteudoPrincipal"]/div/form/table[5]/tbody/tr/td[1]/a')
@@ -158,7 +176,11 @@ class GuiaGeneratorMGSelenium(IGuiaGeneratorService):
 
         s.digitar('//*[@id="divMultaJurosCalcular"]/table/tbody/tr[1]/td[2]/input', guia.valor)
         s.clicar('//*[@id="divMultaJurosCalcular"]/table/tbody/tr[2]/td[3]/a')
-        WebDriverWait(s.driver, 10).until(EC.alert_is_present()).accept()
+        try:
+            alert = WebDriverWait(s.driver, 10).until(EC.alert_is_present())
+            alert.accept()
+        except TimeoutException:
+            pass
         s.digitar('//*[@id="containerConteudoPrincipal"]/div/form/table[4]/tbody/tr[12]/td[2]/textarea', 
                   ObservationOfPaymentSlipService.generate_text(guia.tipo, guia.periodo, guia.uf, guia.notas, guia.fretes))
         s.clicar('//*[@id="containerConteudoPrincipal"]/div/form/table[5]/tbody/tr/td[1]/a')

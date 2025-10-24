@@ -23,4 +23,4 @@ class ExceptionHandler:
         else:
             # Erros inesperados → logar + mostrar genérico
             traceback.print_exc()
-            messagebox.showerror("Erro Desconhecido", "Ocorreu um erro inesperado. Verifique os logs.")
+            messagebox.showerror("Erro Desconhecido", "Ocorreu um erro inesperado.")
