@@ -22,6 +22,7 @@ class GuiaGeneratorMGSelenium(IGuiaGeneratorService):
             self.path = guia.path_save
             self.file_name = guia.file_name
             
+
             self.driver = SeleniumDriver(guia.path_save, headless=True)
             self.driver.driver.get(guia.site)
 

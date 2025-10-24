@@ -107,7 +107,7 @@ class GuiaApp(tk.Tk):
         self.tree_panel.marcar_todos_em_andamento()
         self.threads = []
 
-        semaphore_three_at_time = threading.Semaphore(3)
+        semaphore_three_at_time = threading.Semaphore(1)
         semaphore_one_at_time = threading.Semaphore(1)
 
         def wrapper(guia: Guia):
