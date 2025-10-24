@@ -123,11 +123,9 @@ class GuiaApp(tk.Tk):
         self.check_threads_completion()
 
     def processar_pdf_thread(self, guia: Guia):
-        try:
-            pdf_generated = self.guia_controller.gerar_guia(guia)
-        except Exception as e:
-            pdf_generated = False
-            ExceptionHandler.handle(e)
+       
+        pdf_generated = self.guia_controller.gerar_guia(guia)
+        
         status = "ok" if pdf_generated else "erro"
         self.tree_panel.after(0, lambda: self.tree_panel.atualizar_status(guia, status))
 

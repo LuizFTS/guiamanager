@@ -8,40 +8,46 @@ from infrastructure.utils.selenium_driver import SeleniumDriver
 from domain.services.observation.observation_of_payment_slip import ObservationOfPaymentSlipService
 
 from domain.services.i_guia_generator_service import IGuiaGeneratorService
+from interface.gui.handlers.exception_handler import ExceptionHandler
 
 class GuiaGeneratorBASelenium(IGuiaGeneratorService):
         
-    def gerar(self, guia: Guia) -> str:
+    def gerar(self, guia: Guia) -> bool:
         """
         Gera a guia do estado da BA de acordo com o tipo.
         Retorna o bool caso o PDF foi gerado.
         """
-        self.path = guia.path_save
-        self.file_name = guia.file_name
-        
-        self.driver = SeleniumDriver(guia.path_save, headless=True)
-        self.driver.driver.get(guia.site)
+
+        try:
+            self.path = guia.path_save
+            self.file_name = guia.file_name
+            
+            self.driver = SeleniumDriver(guia.path_save, headless=True)
+            self.driver.driver.get(guia.site)
 
 
-        tipo = guia.tipo.lower()
-        if tipo == "icms":
-            self._icms(guia)
-        elif tipo == "st":
-            self._st(guia)
-        elif tipo == "ican":
-            self._antecipacao(guia)
-        else:
-            raise ValueError(f"Tipo de guia {guia.tipo} não suportado para BA.")
-        
-        pdf_saved = self.driver.compare_files_before_and_after_download_pdf_file(self.path, self.file_name)
-        if pdf_saved:
-            print(f"PDF da loja {guia.filial} salva: {self.file_name}")
-            self.driver.quit()
-            return True
-        else:
-            print(f"Erro ao salvar pdf da loja {guia.filial}.")
-            self.driver.quit()
+            tipo = guia.tipo.lower()
+            if tipo == "icms":
+                self._icms(guia)
+            elif tipo == "st":
+                self._st(guia)
+            elif tipo == "ican":
+                self._antecipacao(guia)
+            else:
+                raise ValueError(f"Tipo de guia {guia.tipo} não suportado para BA.")
+            
+            pdf_saved = self.driver.compare_files_before_and_after_download_pdf_file(self.path, self.file_name)
+            if pdf_saved:
+                print(f"PDF da loja {guia.filial} salva: {self.file_name}")
+                return True
+            else:
+                print(f"Erro ao salvar pdf da loja {guia.filial}.")
+                return False
+        except Exception as e:
+            ExceptionHandler.handle(e)
             return False
+        finally:
+            self.driver.quit()
 
     # ==========================
     # Métodos privados por tipo
@@ -113,7 +119,7 @@ class GuiaGeneratorBASelenium(IGuiaGeneratorService):
 
         element_pagamento = s.get_element('/html/body/form/section/div/div/div[2]/div[3]/div/div/div[3]/div/div/div[3]/div/div/input')
         s.driver.execute_script(f"""
-            arguments[0].value = '{guia.vencimento}';
+            arguments[0].value = '{guia.getPaymentDate}';
             arguments[0].dispatchEvent(new Event('input', {{ bubbles: true }}));
             arguments[0].dispatchEvent(new Event('change', {{ bubbles: true }}));
             arguments[0].dispatchEvent(new Event('blur', {{ bubbles: true }}));

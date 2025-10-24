@@ -74,7 +74,6 @@ class GuiaGeneratorESWebService(IGuiaGeneratorService):
                 cert=(self.cert_file, self.key_file),
                 verify=True
             )
-            print(response.text)
             response.raise_for_status()
             return response
         except requests.exceptions.RequestException as e:
@@ -192,7 +191,6 @@ class GuiaGeneratorESWebService(IGuiaGeneratorService):
             return False
 
         root = ET.fromstring(response.text)
-        print(response)
         xpdf_elem = root.find(".//duae:xPdf", self.NAMESPACES)
 
         if xpdf_elem is not None and xpdf_elem.text:

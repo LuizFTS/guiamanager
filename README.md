@@ -8,7 +8,7 @@ O sistema segue princípios de **Domain-Driven Design (DDD)**, garantindo organi
 ## 🚀 Funcionalidades Principais
 
 - 📂 **Importação de dados via Excel** — Leitura e tratamento de arquivos `.xlsx` com **Pandas**.  
-- 🧱 **Arquitetura em camadas (DDD)** — Separação clara entre domínio, aplicação, infraestrutura e interface.  
+- 🧱 **Metodologia DDD** — Separação clara entre domínio, aplicação, infraestrutura e interface.  
 - 🪟 **Interface gráfica (Tkinter)** — Painel duplo para controle de guias, botões de geração e feedback visual.  
 - ⚙️ **Banco de dados SQLite** — Estrutura local para armazenar informações de certificados, lojas e guias.  
 - 🔁 **Execução paralela** — Threads para geração simultânea de múltiplas guias.  
@@ -19,7 +19,8 @@ O sistema segue princípios de **Domain-Driven Design (DDD)**, garantindo organi
 
 ## 🧩 Funcionalidades em Desenvolvimento
 
-- 🔐 **Configuração de certificado digital** — Interface para seleção e vinculação de certificados por loja.  
+- 🔐 **Configuração de certificado digital** — Interface para seleção e vinculação de certificados por loja. No momento para o estado do ES,
+a importação do certificado digital inserido manualmente.
 - 📁 **Path de download dinâmico** — Usuário poderá definir:
   - Diretório de destino;
   - Nome dinâmico do PDF utilizando variáveis como:
@@ -49,17 +50,6 @@ GuiaManager/
 ├── requirements.txt       # Dependências do projeto
 └── README.md              # Este arquivo
 ```
-
----
-
-## 🧠 Arquitetura
-
-O projeto segue o padrão **DDD (Domain-Driven Design)**:
-
-- **Domain:** entidades como `Guia`, `Loja`, `Certificado`, e exceções específicas.  
-- **Application:** casos de uso como `GerarGuiasUseCase`.  
-- **Infrastructure:** repositórios, manipulação de arquicos XLSX e persistência em SQLite.  
-- **GUI:** interface principal, gerenciamento de eventos e interações do usuário.
 
 ---
 
@@ -125,6 +115,7 @@ O banco SQLite contém tabelas como:
 - `Certificados` — certificados digitais das lojas.  
 - `Lojas` — informações das filiais.  
 - `Guias` — dados de guias geradas.  
+- `Sites` — Cadastro dos sites em que são geradas as guias.  
 
 > ⚠️ As colunas utilizam `CapitalCase` (ex: `"Loja_Id"`, `"Cert_Path"`) para manter consistência com o ORM e o SQL gerado.
 
@@ -139,19 +130,6 @@ O banco SQLite contém tabelas como:
    - As guias são marcadas como *em andamento*.  
    - Threads são criadas para execução paralela.  
    - O progresso é exibido visualmente.  
-
----
-
-## 🧭 Roadmap
-
-- [ ] Finalizar configuração do certificado digital.  
-- [ ] Implementar path dinâmico com variáveis configuráveis.  
-- [ ] Criar logs detalhados de execução.  
-- [ ] Adicionar suporte a exportação em PDF/Excel.  
-- [ ] Modernizar UI com CustomTkinter.  
-- [ ] Criar API REST para integração com sistemas externos.
-
----
 
 ## 🧑‍💻 Autor
 

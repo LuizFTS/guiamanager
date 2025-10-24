@@ -66,8 +66,8 @@ class Guia:
             month = str(dt.month).zfill(2)
 
         path_to_save = os.path.join(
-            r"C:\Users\lu9887091\Nutrien\Tax Brasil - TAX - Indiretos Litigation e Outros\Fechamentos e outros por empresa\Fechamento CDA & CASAL\Escrita Fiscal\Guias pagas",
-            #r"C:\Users\lu9887091\OneDrive - Nutrien\Área de Trabalho\Nova pasta\GETVALUES\Guias pagas",
+            #r"C:\Users\lu9887091\Nutrien\Tax Brasil - TAX - Indiretos Litigation e Outros\Fechamentos e outros por empresa\Fechamento CDA & CASAL\Escrita Fiscal\Guias pagas",
+            r"C:\Users\lu9887091\OneDrive - Nutrien\Área de Trabalho\Nova pasta\GETVALUES\Guias pagas",
             f"Loja {self.filial}",
             year,
             self.tipo_destino,

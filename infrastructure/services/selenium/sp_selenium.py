@@ -6,39 +6,46 @@ from infrastructure.utils.selenium_driver import SeleniumDriver
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-from datetime import datetime
+from interface.gui.handlers.exception_handler import ExceptionHandler
 from time import sleep
 
 class GuiaGeneratorSPSelenium(IGuiaGeneratorService):
     
-    def gerar(self, guia: Guia) -> str:
+    def gerar(self, guia: Guia) -> bool:
         """
         Gera a guia de acordo com o tipo.
         Retorna o path do PDF gerado.
         """
-        self.path = guia.path_save
-        self.file_name = guia.file_name
-        
-        self.driver = SeleniumDriver(guia.path_save, headless=False)
-        self.driver.driver.get(guia.site)
 
-        tipo = guia.tipo.lower()
-        if tipo == "icms":
-            self._icms(guia)
-        elif tipo == "st":
-            self._st(guia)
-        else:
-            raise ValueError(f"Tipo de guia {guia.tipo} não suportado para BA.")
+        try:
+            self.path = guia.path_save
+            self.file_name = guia.file_name
+            
+            self.driver = SeleniumDriver(guia.path_save, headless=False)
+            self.driver.driver.get(guia.site)
 
-        pdf_saved = self.driver.compare_files_before_and_after_download_pdf_file(self.path, self.file_name)
-        if pdf_saved:
-            print(f"PDF da loja {guia.filial} salva: {self.file_name}")
-            self.driver.quit()
-            return True
-        else:
-            print(f"Erro ao salvar pdf da loja {guia.filial}.")
-            self.driver.quit()
+            tipo = guia.tipo.lower()
+            if tipo == "icms":
+                self._icms(guia)
+            elif tipo == "st":
+                self._st(guia)
+            else:
+                raise ValueError(f"Tipo de guia {guia.tipo} não suportado para BA.")
+
+            pdf_saved = self.driver.compare_files_before_and_after_download_pdf_file(self.path, self.file_name)
+            if pdf_saved:
+                print(f"PDF da loja {guia.filial} salva: {self.file_name}")
+                self.driver.quit()
+                return True
+            else:
+                print(f"Erro ao salvar pdf da loja {guia.filial}.")
+                self.driver.quit()
+                return False
+        except Exception as e:
+            ExceptionHandler.handle(e)
             return False
+        finally:
+            self.driver.quit()
         
 
     def _icms(self, guia: Guia):

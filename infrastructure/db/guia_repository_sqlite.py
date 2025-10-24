@@ -31,9 +31,7 @@ class GuiaRepositorySQLite(IGuiaRepository):
                 guia_id = cursor.lastrowid
 
                 # Inserir notas
-                print(guia.notas)
                 for nota in guia.notas:
-                    print(nota)
                     conn.execute(
                         "INSERT INTO NotasGuia (Numero, Guia_Id) VALUES (?, ?)",
                         (nota, guia_id)
